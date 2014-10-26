@@ -7,7 +7,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextPane;
 
-import util.SKConfig;
+import util.AppParams;
 
 public class AProposDialog extends JDialog {
 	private final String TITLE = "A propos";
@@ -35,12 +35,12 @@ public class AProposDialog extends JDialog {
 		textPane.setEditable(false);
 		textPane.setSize(WIDTH - 2, HEIGHT - 2);
 		
-		String content = "<p><strong>Nom du logiciel</strong> : " + SKConfig.APP_NAME;
-		content += "<br /><strong>Version</strong> : " + SKConfig.VERSION;
-		content += "<br /><strong>Description</strong> : " + SKConfig.DESCRIPTION + "</p>";
-		content += "<p><strong>Réalisé par</strong> " + SKConfig.AUTHOR;
-		content += "<br /><strong>Développé en</strong> " + SKConfig.LANGUAGE;
-		content += "<br/><strong>Date de sortie</strong> : " + SKConfig.RELEASE_DATE + "</p>";
+		String content = "<p><strong>Nom du logiciel</strong> : " + AppParams.APP_NAME;
+		content += "<br /><strong>Version</strong> : " + AppParams.VERSION;
+		content += "<br /><strong>Description</strong> : " + AppParams.DESCRIPTION + "</p>";
+		content += "<p><strong>Réalisé par</strong> " + AppParams.AUTHOR;
+		content += "<br /><strong>Développé en</strong> " + AppParams.LANGUAGE;
+		content += "<br/><strong>Date de sortie</strong> : " + AppParams.RELEASE_DATE + "</p>";
 		textPane.setText(content);
 	}
 }

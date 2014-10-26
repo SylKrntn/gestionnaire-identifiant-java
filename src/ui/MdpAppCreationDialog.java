@@ -13,7 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
-import util.SKUtils;
+import util.AppUtils;
 
 public class MdpAppCreationDialog extends JDialog {
 	public static final int OK_BTN = 1;
@@ -96,11 +96,11 @@ public class MdpAppCreationDialog extends JDialog {
 				System.out.println(mdp);
 				System.out.println(mdpConf);
 				// transforme les tableaux de caractère en String
-				String mdpStr = SKUtils.charTabToString(mdp);
-				String mdpConfStr = SKUtils.charTabToString(mdpConf);
+				String mdpStr = AppUtils.charTabToString(mdp);
+				String mdpConfStr = AppUtils.charTabToString(mdpConf);
 				
 				// Teste si les paramètres sont valides
-				if (!SKUtils.isValid(mdpStr) || !SKUtils.isValid(mdpConfStr)) {
+				if (!AppUtils.isValid(mdpStr) || !AppUtils.isValid(mdpConfStr)) {
 					System.out.println("ERREUR : paramètres invalides ! Impossible d'enregistrer la saisie");
 					return;
 				}

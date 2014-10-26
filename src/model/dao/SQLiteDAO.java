@@ -23,8 +23,8 @@ import model.Identifiant;
 import model.Observable;
 import model.Observer;
 import util.MessageType;
-import util.SKConfig;
-import util.SKUtils;
+import util.AppParams;
+import util.AppUtils;
 
 
 public class SQLiteDAO implements Observable {
@@ -68,11 +68,11 @@ public class SQLiteDAO implements Observable {
 			Class.forName("org.sqlite.JDBC");
 			return DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
 		} catch (ClassNotFoundException e) {
-			SKUtils.setConsoleMessage("Erreur : Driver JDBC manquant.", SQLiteDAO.class, MessageType.ERROR, 71, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Erreur : Driver JDBC manquant.", SQLiteDAO.class, MessageType.ERROR, 71, AppParams.DEBUG_MODE);
 			e.printStackTrace();
 			return null;
 		} catch (SQLException e) {
-			SKUtils.setConsoleMessage("Impossible de se connecter à la BDD.", SQLiteDAO.class, MessageType.ERROR, 75, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Impossible de se connecter à la BDD.", SQLiteDAO.class, MessageType.ERROR, 75, AppParams.DEBUG_MODE);
 			e.printStackTrace();
 			return null;
 		}
@@ -88,7 +88,7 @@ public class SQLiteDAO implements Observable {
 			
 			return true;
 		} catch (SQLException e) {
-			SKUtils.setConsoleMessage("Echec de la requête de création de table.", SQLiteDAO.class, MessageType.ERROR, 91, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Echec de la requête de création de table.", SQLiteDAO.class, MessageType.ERROR, 91, AppParams.DEBUG_MODE);
 			e.printStackTrace();
 			return false;
 		}
@@ -117,8 +117,8 @@ public class SQLiteDAO implements Observable {
 		byte[] loginEncrypted = this.encrypt(login, clef);
 		byte[] mdpEncrypted = this.encrypt(mdp, clef);
 		
-		SKUtils.setConsoleMessage("mdp: " + mdp + " ; login: " + login, SQLiteDAO.class, MessageType.INFORMATION, 120, SKConfig.DEBUG_MODE);
-		SKUtils.setConsoleMessage("mdp crypté: " + mdpEncrypted + " ; login crypté: " + loginEncrypted, SQLiteDAO.class, MessageType.INFORMATION, 121, SKConfig.DEBUG_MODE);
+		AppUtils.setConsoleMessage("mdp: " + mdp + " ; login: " + login, SQLiteDAO.class, MessageType.INFORMATION, 120, AppParams.DEBUG_MODE);
+		AppUtils.setConsoleMessage("mdp crypté: " + mdpEncrypted + " ; login crypté: " + loginEncrypted, SQLiteDAO.class, MessageType.INFORMATION, 121, AppParams.DEBUG_MODE);
 		
 		Connection connexion = null;
 		PreparedStatement prepstmt = null;
@@ -127,7 +127,7 @@ public class SQLiteDAO implements Observable {
 			connexion = this.openDB();
 			connexion.setAutoCommit(false);
 			
-			SKUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 130, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 130, AppParams.DEBUG_MODE);
 			
 			prepstmt = connexion.prepareStatement("INSERT INTO identifiants (site, login, mdp) VALUES (?, ?, ?);");
 			prepstmt.setString(1, site);
@@ -137,13 +137,13 @@ public class SQLiteDAO implements Observable {
 			prepstmt.setBytes(3, mdpEncrypted);
 			prepstmt.executeUpdate();
 			
-			SKUtils.setConsoleMessage("Succès de l'enregistrement des données.", SQLiteDAO.class, MessageType.INFORMATION, 144, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Succès de l'enregistrement des données.", SQLiteDAO.class, MessageType.INFORMATION, 144, AppParams.DEBUG_MODE);
 			
 //			SKUtils.showUserMessage("Succès de l'enregistrement des données.", JOptionPane.INFORMATION_MESSAGE);
 			identifiant.setSite(site);
 			identifiant.setLogin(login);
 			identifiant.setMdp(mdp);
-			SKUtils.setConsoleMessage(identifiant.toString(), SQLiteDAO.class, MessageType.INFORMATION, 150, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage(identifiant.toString(), SQLiteDAO.class, MessageType.INFORMATION, 150, AppParams.DEBUG_MODE);
 //			this.notifyObservers();
 			this.notifyObservers(identifiant);
 			dataSaved = true;
@@ -157,7 +157,7 @@ public class SQLiteDAO implements Observable {
 			System.out.println("e.getErrorCode() : " + e.getErrorCode());
 			System.out.println("e.getSQLState() : " + e.getSQLState());
 			System.out.println("e.getMessage() : " + e.getMessage());
-			SKUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 138, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 138, AppParams.DEBUG_MODE);
 //			System.exit(0);
 		}
 		finally {
@@ -183,7 +183,7 @@ public class SQLiteDAO implements Observable {
 	      Class.forName("org.sqlite.JDBC");
 	      c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
 	      c.setAutoCommit(false);
-	      SKUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 186, SKConfig.DEBUG_MODE);
+	      AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 186, AppParams.DEBUG_MODE);
 	      
 	      stmt = c.createStatement();
 	      ResultSet rs = stmt.executeQuery("SELECT * FROM identifiants ORDER BY id DESC;");
@@ -203,7 +203,7 @@ public class SQLiteDAO implements Observable {
 	         consoleMsg += "LOGINDECCRYPTED = " + loginDecrypted + "\n";
 	         consoleMsg += "MDPENCRYPTED = " + mdpEncrypted + "\n";
 	         consoleMsg += "MDPDECRYPTED = " + mdpDecrypted + "\n";
-	         SKUtils.setConsoleMessage(consoleMsg, SQLiteDAO.class, MessageType.INFORMATION, 206, SKConfig.DEBUG_MODE);
+	         AppUtils.setConsoleMessage(consoleMsg, SQLiteDAO.class, MessageType.INFORMATION, 206, AppParams.DEBUG_MODE);
 	         
 //	         logins.add(new Identifiant(site, login, mdp));
 	         logins.add(new Identifiant(site, loginDecrypted, mdpDecrypted));
@@ -212,10 +212,10 @@ public class SQLiteDAO implements Observable {
 	      stmt.close();
 	      c.close();
 	      
-	      SKUtils.setConsoleMessage("Succès de la lecture des données.", SQLiteDAO.class, MessageType.INFORMATION, 215, SKConfig.DEBUG_MODE);
+	      AppUtils.setConsoleMessage("Succès de la lecture des données.", SQLiteDAO.class, MessageType.INFORMATION, 215, AppParams.DEBUG_MODE);
 	      
 	    } catch ( Exception e ) {
-	    	SKUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 218, SKConfig.DEBUG_MODE);
+	    	AppUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 218, AppParams.DEBUG_MODE);
 	    	System.out.println("Raisons possibles de l'erreur :");
 	    	System.out.println("- La connexion à la BDD a échoué,");
 	    	System.out.println("- La requête de récupération des données a échoué,");
@@ -248,7 +248,7 @@ public class SQLiteDAO implements Observable {
 	    	Class.forName("org.sqlite.JDBC");
 	    	c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
 	    	c.setAutoCommit(false);
-	    	SKUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 244, SKConfig.DEBUG_MODE);
+	    	AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 244, AppParams.DEBUG_MODE);
 
 	    	stmt = c.createStatement();
 	    	ResultSet rs = stmt.executeQuery("SELECT site, login, mdp FROM identifiants WHERE site = '"+siteName+"';");
@@ -264,7 +264,7 @@ public class SQLiteDAO implements Observable {
 		        consoleMsg += "LOGIN = " + login + "\n";
 		        consoleMsg += "MDPENCRYPTED = " + mdp + "\n";
 		        consoleMsg += "MDPDECRYPTED = " + mdpDecrypted + "\n";
-	    		SKUtils.setConsoleMessage(consoleMsg, SQLiteDAO.class, MessageType.INFORMATION, 260, SKConfig.DEBUG_MODE);
+	    		AppUtils.setConsoleMessage(consoleMsg, SQLiteDAO.class, MessageType.INFORMATION, 260, AppParams.DEBUG_MODE);
 	    	}
 	    	
 	    	rs.close();
@@ -275,10 +275,10 @@ public class SQLiteDAO implements Observable {
 //	    	SKUtils.setConsoleMessage(identity.toString(), SqliteDAO.class, MessageType.INFORMATION, 231, SKConfig.DEBUG_MODE);
 	    	
 	    	if (identity == null) {
-	    		SKUtils.setConsoleMessage("Aucun site de ce nom trouvé dans la base de données.", SQLiteDAO.class, MessageType.WARNING, 271, SKConfig.DEBUG_MODE);
+	    		AppUtils.setConsoleMessage("Aucun site de ce nom trouvé dans la base de données.", SQLiteDAO.class, MessageType.WARNING, 271, AppParams.DEBUG_MODE);
 	    	}
 	    } catch ( Exception e ) {
-	    	SKUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 274, SKConfig.DEBUG_MODE);
+	    	AppUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 274, AppParams.DEBUG_MODE);
 	    	System.err.println( e.getClass().getName() + ": " + e.getMessage() + "[SqliteDAO.java - fetch() - ligne 136]");
 	    	System.exit(0);
 	    }
@@ -298,7 +298,7 @@ public class SQLiteDAO implements Observable {
 	 * @param siteName
 	 */
 	public void delete(String siteName) {
-		SKUtils.setConsoleMessage("Nom du site : " + siteName, SQLiteDAO.class, MessageType.INFORMATION, 294, SKConfig.DEBUG_MODE);
+		AppUtils.setConsoleMessage("Nom du site : " + siteName, SQLiteDAO.class, MessageType.INFORMATION, 294, AppParams.DEBUG_MODE);
 		dataDeleted = false;
 		Connection c = null;
 	    PreparedStatement stmt = null;
@@ -308,7 +308,7 @@ public class SQLiteDAO implements Observable {
 	    	c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
 	    	c.setAutoCommit(false);
 	    	
-	    	SKUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 304, SKConfig.DEBUG_MODE);
+	    	AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 304, AppParams.DEBUG_MODE);
 	    	
 	    	if (siteName != null || !siteName.equals("")) {// si l'utilisateur a renseigné un site web, on vérifie que ce site existe dans la BDD
 		    	stmt = c.prepareStatement("DELETE FROM identifiants WHERE site = ?;");
@@ -317,16 +317,16 @@ public class SQLiteDAO implements Observable {
 			    if (stmt.executeUpdate() > 0) {// si la suppression a réussi...
 			    	dataDeleted = true;
 //			    	SKUtils.showUserMessage("Succès de la suppression de la donnée dans la base de données.", JOptionPane.INFORMATION_MESSAGE);
-			    	SKUtils.setConsoleMessage("Succès de la suppression des données.", SQLiteDAO.class, MessageType.INFORMATION, 313, SKConfig.DEBUG_MODE);
+			    	AppUtils.setConsoleMessage("Succès de la suppression des données.", SQLiteDAO.class, MessageType.INFORMATION, 313, AppParams.DEBUG_MODE);
 			    }
 			    else {// si la suppression a échoué...
 //			    	SKUtils.showUserMessage("Ce site web n'existe pas dans la BDD.", JOptionPane.WARNING_MESSAGE);
-			    	SKUtils.setConsoleMessage("Ce site web n'existe pas dans la BDD.", SQLiteDAO.class, MessageType.ERROR, 317, SKConfig.DEBUG_MODE);
+			    	AppUtils.setConsoleMessage("Ce site web n'existe pas dans la BDD.", SQLiteDAO.class, MessageType.ERROR, 317, AppParams.DEBUG_MODE);
 			    }
 	    	}
 	    	else {// si l'utilisateur n'a rien renseigné, on affiche un message d'erreur
 //	    		SKUtils.showUserMessage("Veuillez saisir un site web.", JOptionPane.WARNING_MESSAGE);
-	    		SKUtils.setConsoleMessage("Aucun site web n'a été saisi.", SQLiteDAO.class, MessageType.ERROR, 322, SKConfig.DEBUG_MODE);
+	    		AppUtils.setConsoleMessage("Aucun site web n'a été saisi.", SQLiteDAO.class, MessageType.ERROR, 322, AppParams.DEBUG_MODE);
 	    	}
 	    	
 	    	stmt.close();
@@ -334,8 +334,8 @@ public class SQLiteDAO implements Observable {
 	    	c.close();
 	    	
 	    } catch ( Exception e ) {
-	    	SKUtils.showUserMessage(e.getClass().getName() + ": " + e.getMessage(), JOptionPane.ERROR_MESSAGE);
-	    	SKUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 331, SKConfig.DEBUG_MODE);
+	    	AppUtils.showUserMessage(e.getClass().getName() + ": " + e.getMessage(), JOptionPane.ERROR_MESSAGE);
+	    	AppUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.ERROR, 331, AppParams.DEBUG_MODE);
 //	    	System.exit(0);
 	    	try {
 				stmt.close();
@@ -363,21 +363,21 @@ public class SQLiteDAO implements Observable {
 		int queryNb = 0;
 		
 		if (mdpB != null) {
-			mdp = SKUtils.charTabToString(mdpB);
+			mdp = AppUtils.charTabToString(mdpB);
 			mdpEncrypted = this.encrypt(mdp, clef);
 		}
 		
 		String consoleMsg = "*** UPDATE du site web : " + site + " ***\n";
 		consoleMsg += "login : " + login + "\n";
 		consoleMsg += "mdp : " + mdp + "\n";
-		SKUtils.setConsoleMessage(consoleMsg, SQLiteDAO.class, MessageType.INFORMATION, 366, SKConfig.DEBUG_MODE);
+		AppUtils.setConsoleMessage(consoleMsg, SQLiteDAO.class, MessageType.INFORMATION, 366, AppParams.DEBUG_MODE);
 		
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
 			c.setAutoCommit(false);
 			
-			SKUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 373, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 373, AppParams.DEBUG_MODE);
 			
 			// Si login et mdp sont invalides...
 			if ((login.isEmpty() || login.equals("") || login.matches(" +") || login == null || login.equals("NA")) &&
@@ -422,10 +422,10 @@ public class SQLiteDAO implements Observable {
 //	    	c.commit();
 //	    	c.close();
 	    	
-	    	SKUtils.setConsoleMessage("Succès de la mise à jour de la donnée dans la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 418, SKConfig.DEBUG_MODE);
+	    	AppUtils.setConsoleMessage("Succès de la mise à jour de la donnée dans la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 418, AppParams.DEBUG_MODE);
 			
 		} catch (Exception e) {
-			SKUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.INFORMATION, 421, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage(e.getClass().getName() + ": " + e.getMessage(), SQLiteDAO.class, MessageType.INFORMATION, 421, AppParams.DEBUG_MODE);
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() + " [SqliteDAO.java - update() - ligne 361]");
 		}
 		finally {
@@ -481,7 +481,7 @@ public class SQLiteDAO implements Observable {
 			e.printStackTrace();
 			return null;
 		} catch (BadPaddingException e) {
-			SKUtils.setConsoleMessage("Erreur : La clef de décryptage n'est pas la même que celle qui a servi au cryptage.", SQLiteDAO.class, MessageType.ERROR, 478, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Erreur : La clef de décryptage n'est pas la même que celle qui a servi au cryptage.", SQLiteDAO.class, MessageType.ERROR, 478, AppParams.DEBUG_MODE);
 			e.printStackTrace();
 			return null;
 		}

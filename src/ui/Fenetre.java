@@ -64,8 +64,8 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import util.MessageType;
-import util.SKConfig;
-import util.SKUtils;
+import util.AppParams;
+import util.AppUtils;
 import model.Identifiant;
 import model.IdentifiantTableModel;
 import model.dao.SQLiteDAO;
@@ -94,7 +94,7 @@ public class Fenetre extends JFrame {
 		this.getContentPane().add(btnPane, BorderLayout.SOUTH);
 		
 		this.setVisible(true);
-		SKUtils.setConsoleMessage("Fenêtre principale ouverte.", Fenetre.class, MessageType.INFORMATION, 36, SKConfig.DEBUG_MODE);
+		AppUtils.setConsoleMessage("Fenêtre principale ouverte.", Fenetre.class, MessageType.INFORMATION, 36, AppParams.DEBUG_MODE);
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class Fenetre extends JFrame {
 		tableau.setModel(identifiantTM);
 		tableau.setAutoCreateRowSorter(true);
 		tableau.getColumn("SITE").setCellRenderer(new FirstColumnRender());
-		SKUtils.setConsoleMessage("contentPane initialisé.", Fenetre.class, MessageType.INFORMATION, 49, SKConfig.DEBUG_MODE);
+		AppUtils.setConsoleMessage("contentPane initialisé.", Fenetre.class, MessageType.INFORMATION, 49, AppParams.DEBUG_MODE);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class Fenetre extends JFrame {
 		
 		btnPane.add(btnAdd);
 		btnPane.add(btnDel);
-		SKUtils.setConsoleMessage("btnPane initialisé.", Fenetre.class, MessageType.INFORMATION, 62, SKConfig.DEBUG_MODE);
+		AppUtils.setConsoleMessage("btnPane initialisé.", Fenetre.class, MessageType.INFORMATION, 62, AppParams.DEBUG_MODE);
 	}
 	
 	/* --------------------------------------------------------------------------------------------------------------- */
@@ -363,7 +363,7 @@ public class Fenetre extends JFrame {
 				document.add(paragraphe);
 				document.add(pdfTable);
 				document.close();
-				SKUtils.showUserMessage("Fichier PDF créé avec succès.", JOptionPane.INFORMATION_MESSAGE);
+				AppUtils.showUserMessage("Fichier PDF créé avec succès.", JOptionPane.INFORMATION_MESSAGE);
 			} catch (DocumentException | FileNotFoundException e1) {
 				e1.printStackTrace();
 			}

@@ -18,8 +18,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import util.MessageType;
-import util.SKConfig;
-import util.SKUtils;
+import util.AppParams;
+import util.AppUtils;
 import model.Identifiant;
 import model.Observable;
 import model.Observer;
@@ -80,11 +80,11 @@ public class AddIdentifiantDialog extends JDialog  {
 				String site = siteJtf.getText();
 				String login = loginJtf.getText();
 				char[] mdp = mdpJpf.getPassword();
-				String mdpStr = SKUtils.charTabToString(mdp);
+				String mdpStr = AppUtils.charTabToString(mdp);
 				
 				// Teste si les paramètres sont valides
-				if (!SKUtils.isValid(site) || !SKUtils.isValid(login) || !SKUtils.isValid(mdpStr)) {
-					SKUtils.setConsoleMessage("ERREUR : paramètres invalides ! Impossible d'enregistrer la saisie", AddIdentifiantDialog.class, MessageType.ERROR, 88, SKConfig.DEBUG_MODE);
+				if (!AppUtils.isValid(site) || !AppUtils.isValid(login) || !AppUtils.isValid(mdpStr)) {
+					AppUtils.setConsoleMessage("ERREUR : paramètres invalides ! Impossible d'enregistrer la saisie", AddIdentifiantDialog.class, MessageType.ERROR, 88, AppParams.DEBUG_MODE);
 					return;
 				}
 				

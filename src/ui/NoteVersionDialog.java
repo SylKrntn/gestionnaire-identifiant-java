@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
-import util.SKConfig;
+import util.AppParams;
 
 public class NoteVersionDialog extends JDialog {
 
@@ -37,8 +37,8 @@ public class NoteVersionDialog extends JDialog {
 		textPane.setEditable(false);
 		textPane.setSize(WIDTH - 2, HEIGHT - 2);
 		
-		String content = "<p><strong>Version</strong> : " + SKConfig.VERSION;// v1.2
-		content += "<br/><strong>Date de mise à jour</strong> : " + SKConfig.RELEASE_DATE;// 26/10/2014
+		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.2
+		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 26/10/2014
 		
 		content += "<br /><strong>Nouveautés</strong> : ";
 		content += "<ul>";

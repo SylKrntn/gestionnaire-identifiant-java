@@ -12,8 +12,8 @@ import java.io.ObjectOutputStream;
 
 import model.MdpApp;
 import util.MessageType;
-import util.SKConfig;
-import util.SKUtils;
+import util.AppParams;
+import util.AppUtils;
 
 public class FileDAO {
 
@@ -42,9 +42,9 @@ public class FileDAO {
 			oos.writeObject(mdpApp);
 			oos.flush();
 			oos.close();
-			SKUtils.setConsoleMessage("Succès de l'enregistrement du mot de passe applicatif", FileDAO.class, MessageType.INFORMATION, 45, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Succès de l'enregistrement du mot de passe applicatif", FileDAO.class, MessageType.INFORMATION, 45, AppParams.DEBUG_MODE);
 		} catch (IOException e) {
-			SKUtils.setConsoleMessage("Echec de l'enregistrement du mot de passe applicatif", FileDAO.class, MessageType.ERROR, 47, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Echec de l'enregistrement du mot de passe applicatif", FileDAO.class, MessageType.ERROR, 47, AppParams.DEBUG_MODE);
 			
 			try { oos.close(); }
 			catch (IOException e1) { e1.printStackTrace(); }
@@ -64,23 +64,23 @@ public class FileDAO {
 		try {
 			ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
 			mdpApp = (MdpApp) ois.readObject();
-			SKUtils.setConsoleMessage("*** FileDAO ***\n mdp crypté : " + mdpApp.getMdpSha256(), FileDAO.class, MessageType.INFORMATION, 67, SKConfig.DEBUG_MODE);
-			SKUtils.setConsoleMessage("Succès de la récupération du mot de passe applicatif.", FileDAO.class, MessageType.INFORMATION, 68, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("*** FileDAO ***\n mdp crypté : " + mdpApp.getMdpSha256(), FileDAO.class, MessageType.INFORMATION, 67, AppParams.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Succès de la récupération du mot de passe applicatif.", FileDAO.class, MessageType.INFORMATION, 68, AppParams.DEBUG_MODE);
 		} catch (FileNotFoundException e) {
-			SKUtils.setConsoleMessage("Erreur : le chemin d'accès au fichier est incorrect.", FileDAO.class, MessageType.ERROR, 70, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Erreur : le chemin d'accès au fichier est incorrect.", FileDAO.class, MessageType.ERROR, 70, AppParams.DEBUG_MODE);
 			e.printStackTrace();
 		} catch (IOException e) {
-			SKUtils.setConsoleMessage("Erreur : une exception est survenue lors de la tentative d'accès au fichier.", FileDAO.class, MessageType.ERROR, 73, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Erreur : une exception est survenue lors de la tentative d'accès au fichier.", FileDAO.class, MessageType.ERROR, 73, AppParams.DEBUG_MODE);
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			SKUtils.setConsoleMessage("Erreur : le type d'objet retourné n'est pas celui attendu.", FileDAO.class, MessageType.ERROR, 76, SKConfig.DEBUG_MODE);
+			AppUtils.setConsoleMessage("Erreur : le type d'objet retourné n'est pas celui attendu.", FileDAO.class, MessageType.ERROR, 76, AppParams.DEBUG_MODE);
 			e.printStackTrace();
 		} 
 		finally {
 			try {
-				ois.close();
+				if (ois != null) ois.close();
 			} catch (IOException e) {
-				SKUtils.setConsoleMessage("Erreur : une exception est survenue lors de la tentative de fermeture du flux de lecture.", FileDAO.class, MessageType.ERROR, 83, SKConfig.DEBUG_MODE);
+				AppUtils.setConsoleMessage("Erreur : une exception est survenue lors de la tentative de fermeture du flux de lecture.", FileDAO.class, MessageType.ERROR, 83, AppParams.DEBUG_MODE);
 				e.printStackTrace();
 			}
 		}

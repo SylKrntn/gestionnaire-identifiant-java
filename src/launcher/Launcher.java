@@ -16,8 +16,8 @@ import ui.Fenetre;
 import ui.MdpAppCreationDialog;
 import ui.MdpAppRecuperationDialog;
 import util.MessageType;
-import util.SKConfig;
-import util.SKUtils;
+import util.AppParams;
+import util.AppUtils;
 
 public class Launcher {
 
@@ -50,12 +50,12 @@ public class Launcher {
 					} while ((int) obj[0] == MdpAppCreationDialog.OK_BTN && obj[1] == null);
 				}
 				else {// sinon, la table n'a pas été créée dans la BDD...
-					SKUtils.setConsoleMessage("Erreur lors de la création de la table dans la BDD.", Launcher.class, MessageType.ERROR, 53, SKConfig.DEBUG_MODE);
+					AppUtils.setConsoleMessage("Erreur lors de la création de la table dans la BDD.", Launcher.class, MessageType.ERROR, 53, AppParams.DEBUG_MODE);
 					System.exit(0);
 				}
 			}
 			else {// sinon, la connexion à la BDD a échoué
-				SKUtils.setConsoleMessage("Echec de la connexion à la BDD.", Launcher.class, MessageType.ERROR, 58, SKConfig.DEBUG_MODE);
+				AppUtils.setConsoleMessage("Echec de la connexion à la BDD.", Launcher.class, MessageType.ERROR, 58, AppParams.DEBUG_MODE);
 				System.exit(0);
 			}
 		}
@@ -67,7 +67,7 @@ public class Launcher {
 				
 				String consoleMsg = "*** MdpApp ***\n";
 				consoleMsg += mdp + "\n";
-				SKUtils.setConsoleMessage(consoleMsg, Launcher.class, MessageType.INFORMATION, 70, SKConfig.DEBUG_MODE);
+				AppUtils.setConsoleMessage(consoleMsg, Launcher.class, MessageType.INFORMATION, 70, AppParams.DEBUG_MODE);
 				Object[] obj = {0, null};
 				int mdpErrorNb = 0;
 				String sha256 = "";// mot de passe saisi par l'utilisteur, qui sera crypté
@@ -78,8 +78,8 @@ public class Launcher {
 					obj = MdpAppRecuperationDialog.open();
 					if (obj[1] != null) {
 						sha256 = DigestUtils.sha256Hex(((String) obj[1]).getBytes());
-						SKUtils.setConsoleMessage("mdp applicatif (crypté) : " + mdp, Launcher.class, MessageType.INFORMATION, 81, SKConfig.DEBUG_MODE);
-						SKUtils.setConsoleMessage("mdp utilisateur crypté : " + sha256, Launcher.class, MessageType.INFORMATION, 82, SKConfig.DEBUG_MODE);
+						AppUtils.setConsoleMessage("mdp applicatif (crypté) : " + mdp, Launcher.class, MessageType.INFORMATION, 81, AppParams.DEBUG_MODE);
+						AppUtils.setConsoleMessage("mdp utilisateur crypté : " + sha256, Launcher.class, MessageType.INFORMATION, 82, AppParams.DEBUG_MODE);
 						
 						// Si le mot de passe applicatif est bon
 						if (sha256.equals(mdpApp.getMdpSha256())) {// si le mdp crypté est le même que celui enregistré dans le fichier de conf...
@@ -90,12 +90,12 @@ public class Launcher {
 						// Sinon, le mot de passe n'est pas bon
 						else {
 							mdpErrorNb++;// incrémente le compteur d'erreur de mot de passe applicatif
-							SKUtils.setConsoleMessage("ERREUR : Le mot de passe saisi, une fois crypté, n'est pas le même que celui du fichier de conf.", Launcher.class, MessageType.ERROR, 93, SKConfig.DEBUG_MODE);
-							SKUtils.showUserMessage("Le mot de passe saisi (après chiffrement) est différent du mot de passe applicatif.", JOptionPane.WARNING_MESSAGE);
+							AppUtils.setConsoleMessage("ERREUR : Le mot de passe saisi, une fois crypté, n'est pas le même que celui du fichier de conf.", Launcher.class, MessageType.ERROR, 93, AppParams.DEBUG_MODE);
+							AppUtils.showUserMessage("Le mot de passe saisi (après chiffrement) est différent du mot de passe applicatif.", JOptionPane.WARNING_MESSAGE);
 							
 							if (mdpErrorNb == 3) {// Si l'utilisateur a mal saisi 3 fois de suite le mot de passe applicatif...
-								SKUtils.showUserMessage("3 mots de passe successifs invalides. L'application va être arrêtée.", JOptionPane.ERROR_MESSAGE);
-								SKUtils.setConsoleMessage("ERREUR : 3 mots de passe successifs invalides. Application arrêtée.", Launcher.class, MessageType.ERROR, 98, SKConfig.DEBUG_MODE);
+								AppUtils.showUserMessage("3 mots de passe successifs invalides. L'application va être arrêtée.", JOptionPane.ERROR_MESSAGE);
+								AppUtils.setConsoleMessage("ERREUR : 3 mots de passe successifs invalides. Application arrêtée.", Launcher.class, MessageType.ERROR, 98, AppParams.DEBUG_MODE);
 								try {
 									connexion.close();
 								} catch (SQLException e) {
@@ -112,8 +112,8 @@ public class Launcher {
 			}
 			// si la connexion à la BDD a échoué...
 			else {
-				SKUtils.showUserMessage("Echec de la connexion à la BDD SQLite.", JOptionPane.ERROR_MESSAGE);
-				SKUtils.setConsoleMessage("ERREUR : Echec de la connexion à la BDD SQLite.", Launcher.class, MessageType.ERROR, 116, SKConfig.DEBUG_MODE);
+				AppUtils.showUserMessage("Echec de la connexion à la BDD SQLite.", JOptionPane.ERROR_MESSAGE);
+				AppUtils.setConsoleMessage("ERREUR : Echec de la connexion à la BDD SQLite.", Launcher.class, MessageType.ERROR, 116, AppParams.DEBUG_MODE);
 				System.exit(0);
 			}
 		}// END else (fichier existe)

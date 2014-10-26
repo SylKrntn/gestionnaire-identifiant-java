@@ -27,7 +27,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import model.Identifiant;
-import util.SKUtils;
+import util.AppUtils;
 
 public class ImportationDialog extends JDialog {
 

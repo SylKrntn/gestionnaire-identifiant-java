@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.KeyStroke;
 
-import util.SKUtils;
+import util.AppUtils;
 
 public class MdpAppRecuperationDialog extends JDialog {
 	public static final int OK_BTN = 1;
@@ -87,10 +87,10 @@ public class MdpAppRecuperationDialog extends JDialog {
 				}
 				System.out.println(mdp);
 				// transforme les tableaux de caractère en String
-				String mdpStr = SKUtils.charTabToString(mdp);
+				String mdpStr = AppUtils.charTabToString(mdp);
 				
 				// Si le mot de passe n'est pas valide
-				if (!SKUtils.isValid(mdpStr)) {
+				if (!AppUtils.isValid(mdpStr)) {
 					System.out.println("ERREUR : paramètres invalides ! Impossible d'enregistrer la saisie");
 //					setVisible(false);
 					return;
