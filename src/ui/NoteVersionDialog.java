@@ -37,8 +37,25 @@ public class NoteVersionDialog extends JDialog {
 		textPane.setEditable(false);
 		textPane.setSize(WIDTH - 2, HEIGHT - 2);
 		
-		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.2
-		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 26/10/2014
+		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.3
+		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 27/10/2014
+		
+		content += "<br /><strong>Nouveautés</strong> : ";
+		content += "<ul>";
+		content += "<li>Laisser le choix, à l'utilisateur, du répertoire d'enregistrer des fichiers</li>";
+		content += "</ul>";
+		
+		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
+		content += "<ul>";
+		content += "<li>Ajout des boîtes de dialogues \"Manuel utilisateur\" et \"Options\"</li>";
+		content += "<li>Ajouter des info-bulles sur certains boutons</li>";
+		content += "<li>Annuler la suppression d'un identifiant</li>";
+		content += "<li>Exporter les données aux formats CSV et TXT</li>";
+		content += "<li>Ajouter la possibilité de changer le mot de passe utilisateur</li>";
+		content += "</ul></p><hr>";// END maj
+		
+		content += "<p><strong>Version</strong> : 1.2";// v1.2
+		content += "<br/><strong>Date de mise à jour</strong> : 26/10/2014";// 26/10/2014
 		
 		content += "<br /><strong>Nouveautés</strong> : ";
 		content += "<ul>";

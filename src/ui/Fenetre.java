@@ -22,6 +22,7 @@ import java.util.Comparator;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -56,6 +57,9 @@ import javax.swing.KeyStroke;
 
 
 
+
+
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -314,10 +318,30 @@ public class Fenetre extends JFrame {
 	private class ExportAsPDFAction extends AbstractAction {
 		
 		public void actionPerformed(ActionEvent e) {
-			String[] headers = identifiantTM.getENTETE();
-			ArrayList<Identifiant> datas = identifiantTM.getIdentifiants();
+			final String DEFAULT_FILE_PATH = "./identifiants.pdf";
+			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
+			String[] headers = identifiantTM.getENTETE();// en-têtes de colonnes
+			ArrayList<Identifiant> datas = identifiantTM.getIdentifiants();// les données (identifiants)
 			int nbColonnes = headers.length;
 			int nbLignes = datas.size();
+			
+			// TODO: Proposer à l'utilisateur de saisir le répertoire d'enregistrement
+			JFileChooser saveChooser = new JFileChooser();
+			FileNameExtensionFilter pdfFilter = new FileNameExtensionFilter("Extension .pdf", "pdf");
+			saveChooser.setFileFilter(pdfFilter);
+			int btnClicked = saveChooser.showSaveDialog(Fenetre.this);
+			if (btnClicked == JFileChooser.APPROVE_OPTION) {
+				try {
+					filePath = saveChooser.getSelectedFile().getCanonicalPath();
+					if (filePath == null) filePath = DEFAULT_FILE_PATH;
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			else {// si l'utilisateur a cliqué sur la "croix" ou le bouton "annuler", on sort de l'action en cours.
+				return;
+			}
 			
 			// Trie par ordre croissant tous les identifiants en fonction du nom du site web
 			Collections.sort(datas, new Comparator<Identifiant>() {
@@ -326,6 +350,7 @@ public class Fenetre extends JFrame {
 				}
 			});
 			
+			// Prépare le document PDF
 			Document document = new Document();
 			Paragraph paragraphe = new Paragraph();
 			PdfPTable pdfTable = new PdfPTable(nbColonnes);
@@ -356,15 +381,16 @@ public class Fenetre extends JFrame {
 				}				
 			}
 			
-			// TODO: Proposer à l'utilisateur de saisir le répertoire d'enregistrement
+			// Enregistre le document pdf créé dans le fichier de sortie (PDF)
 			try {
-				PdfWriter.getInstance(document, new FileOutputStream("C:/Users/Sainsain/Desktop/identifiants.pdf"));
+				PdfWriter.getInstance(document, new FileOutputStream(filePath));
 				document.open();
 				document.add(paragraphe);
 				document.add(pdfTable);
 				document.close();
 				AppUtils.showUserMessage("Fichier PDF créé avec succès.", JOptionPane.INFORMATION_MESSAGE);
 			} catch (DocumentException | FileNotFoundException e1) {
+				AppUtils.showUserMessage("Une erreur est survenue lors de l'exportation. Le fichier n'a pas été créé.", JOptionPane.INFORMATION_MESSAGE);
 				e1.printStackTrace();
 			}
 		}		
