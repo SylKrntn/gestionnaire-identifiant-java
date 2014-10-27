@@ -242,6 +242,8 @@ public class Fenetre extends JFrame {
 		JButton btnAdd = new JButton("Ajouter un identifiant");
 		JButton btnDel = new JButton("Supprimer un(des) identifiant(s)");
 		
+		btnDel.setToolTipText("Sélectionnez une(des) ligne(s) dans la table puis cliquez sur ce bouton");
+		
 		btnAdd.addActionListener(new AddIdentifiantAction());
 		btnDel.addActionListener(new DelIdentifiantAction());
 		

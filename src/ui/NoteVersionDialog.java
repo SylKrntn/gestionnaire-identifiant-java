@@ -42,13 +42,14 @@ public class NoteVersionDialog extends JDialog {
 		
 		content += "<br /><strong>Nouveautés</strong> : ";
 		content += "<ul>";
-		content += "<li>Laisser le choix, à l'utilisateur, du répertoire d'enregistrer des fichiers</li>";
+		content += "<li>L'utilisateur a maintenant le choix du répertoire d'enregistrement des fichiers (PDF)</li>";
+		content += "<li>Mise à jour de l'importation des identifiants à partir d'un fichier (CSV et TXT)</li>";
+		content += "<li>Ajout d'une info-bulle sur le bouton de suppression d'identifiants</li>";
 		content += "</ul>";
 		
 		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
 		content += "<ul>";
 		content += "<li>Ajout des boîtes de dialogues \"Manuel utilisateur\" et \"Options\"</li>";
-		content += "<li>Ajouter des info-bulles sur certains boutons</li>";
 		content += "<li>Annuler la suppression d'un identifiant</li>";
 		content += "<li>Exporter les données aux formats CSV et TXT</li>";
 		content += "<li>Ajouter la possibilité de changer le mot de passe utilisateur</li>";
