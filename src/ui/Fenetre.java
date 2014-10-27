@@ -262,10 +262,10 @@ public class Fenetre extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			Object[] importDial = ImportationDialog.open(Fenetre.this);
-			System.out.println(importDial[0]);
-			System.out.println(importDial[1]);
-			System.out.println(importDial[2]);
-			System.out.println(importDial[3]);
+			System.out.println(importDial[0]);// valeur du bouton cliqué {int}
+			System.out.println(importDial[1]);// chemin du fichier {String}
+			System.out.println(importDial[2]);// séparateur {String}
+			System.out.println(importDial[3]);// présente d'une en-tête de colonne {boolean}
 			
 			BufferedReader br = null;
 			try {
@@ -276,7 +276,20 @@ public class Fenetre extends JFrame {
 				}
 				while ((line = br.readLine()) != null) {
 					String[] splitedIdentifiant = line.split((String) importDial[2]);
-					identifiants.add(new Identifiant(splitedIdentifiant[0], splitedIdentifiant[1], splitedIdentifiant[2]));
+					if (splitedIdentifiant.length == 3) {
+						identifiants.add(new Identifiant(splitedIdentifiant[0], splitedIdentifiant[1], splitedIdentifiant[2]));
+					}
+					else {
+						Identifiant identifiant = new Identifiant();
+						identifiant.setSite(splitedIdentifiant[0]);
+						identifiant.setLogin(splitedIdentifiant[1]);
+						String mdp = "";
+						for (int i=2; i<splitedIdentifiant.length; i++) {
+							mdp += splitedIdentifiant[i];
+						}
+						identifiant.setMdp(mdp);
+						identifiants.add(identifiant);
+					}					
 				}
 				identifiantTM.setIdentifiants(identifiants);
 			} catch (FileNotFoundException e2) {
