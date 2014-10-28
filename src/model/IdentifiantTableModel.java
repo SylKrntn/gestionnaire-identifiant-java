@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
+import util.AppParams;
+import util.AppUtils;
+import util.MessageType;
 import model.dao.SQLiteDAO;
 
 public class IdentifiantTableModel extends AbstractTableModel implements Observer {
@@ -131,7 +134,7 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 	 * Met à jour la liste des identifiants après en avoir été notifié
 	 */
 	public void update(Observable observable, Object obj) {
-		System.out.println(((Identifiant) obj).toString() + " [IdentifiantTableModel - update() - 113]");
+		AppUtils.setConsoleMessage(((Identifiant) obj).toString(), IdentifiantTableModel.class, MessageType.INFORMATION, 136, AppParams.DEBUG_MODE);
 		this.addIdentifiant((Identifiant) obj);
 	}
 	
@@ -142,9 +145,13 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 	}
 
 	public void setIdentifiants(ArrayList<Identifiant> identifiants) {
+		ArrayList<Identifiant> oldIdentifiants = getIdentifiants();
 		this.identifiants = identifiants;// affecte la liste d'identifiants (importée d'un fichier) à la liste du modèle
 		SQLiteDAO.getInstance().saveLoginsList(this.identifiants);// enregistre toutes ces nouvelles données dans la BDD
 		if (SQLiteDAO.getInstance().isDataSaved()) {// si toutes les données ont été insérées...
+			for (int i=0; i<oldIdentifiants.size(); i++) {
+				this.identifiants.add(oldIdentifiants.get(i));// rajoute les anciennes données pour refléter celles de la BDD
+			}
 			this.fireTableDataChanged();// notifie à la table de se mettre à jour dans l'interface
 		}		
 	}

@@ -260,18 +260,18 @@ public class Fenetre extends JFrame {
 	
 	private class ImportFromCSVOrTXTAction extends AbstractAction {
 		ArrayList<Identifiant> identifiants = new ArrayList<Identifiant>();
-		@Override
+		
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			Object[] importDial = ImportationDialog.open(Fenetre.this);
 			System.out.println(importDial[0]);// valeur du bouton cliqué {int}
 			System.out.println(importDial[1]);// chemin du fichier {String}
 			System.out.println(importDial[2]);// séparateur {String}
-			System.out.println(importDial[3]);// présente d'une en-tête de colonne {boolean}
+			System.out.println(importDial[3]);// présence d'une en-tête de colonne {boolean}
 			
 			BufferedReader br = null;
 			try {
-				br = new BufferedReader(new FileReader((String) importDial[1]));
+				br = new BufferedReader(new FileReader((String) importDial[1]));// ouverture d'un flux de lecture du fichier
 				String line = null;
 				if ((boolean) importDial[3]) {
 					br.readLine();// saute le titre
@@ -293,7 +293,7 @@ public class Fenetre extends JFrame {
 						identifiants.add(identifiant);
 					}					
 				}
-				identifiantTM.setIdentifiants(identifiants);
+				identifiantTM.setIdentifiants(identifiants);// enregistrement des données dans la table
 			} catch (FileNotFoundException e2) {
 				// TODO le fichier n'existe pas
 				e2.printStackTrace();
