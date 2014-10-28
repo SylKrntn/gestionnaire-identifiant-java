@@ -8,15 +8,15 @@ public class MdpApp implements Serializable {
 	
 	public MdpApp() { }
 	
-	public MdpApp(String mdp) {
-		this.sha256 = mdp;
+	public MdpApp(String mdpEncrypted) {
+		this.sha256 = mdpEncrypted;
 	}
 	
 	public String getMdpSha256() {
 		return this.sha256;
 	}
 	
-	public void setMdpSha256(String mdp) {
-		this.sha256 = mdp;
+	public void setMdpSha256(String mdpEncrypted) {
+		this.sha256 = mdpEncrypted;
 	}
 }

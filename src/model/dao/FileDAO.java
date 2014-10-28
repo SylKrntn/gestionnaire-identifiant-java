@@ -32,7 +32,8 @@ public class FileDAO {
 	 * @param mdpApp {MdpApp} : le mot de passe applicatif à enregistrer
 	 * @param file {File} : le fichier dans lequel enregistrer ce mot de passe
 	 */
-	public void saveAppPassword(MdpApp mdpApp, File file) {
+	public boolean saveAppPassword(MdpApp mdpApp, File file) {
+		boolean mdpSaved = false;
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(
@@ -42,14 +43,19 @@ public class FileDAO {
 			oos.writeObject(mdpApp);
 			oos.flush();
 			oos.close();
+			
+			mdpSaved = true;
 			AppUtils.setConsoleMessage("Succès de l'enregistrement du mot de passe applicatif", FileDAO.class, MessageType.INFORMATION, 45, AppParams.DEBUG_MODE);
 		} catch (IOException e) {
+			mdpSaved = false;
 			AppUtils.setConsoleMessage("Echec de l'enregistrement du mot de passe applicatif", FileDAO.class, MessageType.ERROR, 47, AppParams.DEBUG_MODE);
 			
+			e.printStackTrace();
+		} finally {
 			try { oos.close(); }
 			catch (IOException e1) { e1.printStackTrace(); }
-			e.printStackTrace();
 		}
+		return mdpSaved;
 	}
 	
 	/**

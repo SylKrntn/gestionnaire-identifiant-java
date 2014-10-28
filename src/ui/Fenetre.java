@@ -61,6 +61,8 @@ import javax.swing.KeyStroke;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -72,6 +74,8 @@ import util.AppParams;
 import util.AppUtils;
 import model.Identifiant;
 import model.IdentifiantTableModel;
+import model.MdpApp;
+import model.dao.FileDAO;
 import model.dao.SQLiteDAO;
 
 public class Fenetre extends JFrame {
@@ -203,7 +207,7 @@ public class Fenetre extends JFrame {
 	private void initHelpMenu() {
 		aide = new JMenu("?");
 		aide.setMnemonic(KeyEvent.VK_H);
-		// TODO: "A propos", "notes de version", "manuel utilisation", "options"
+		// TODO: "manuel utilisation", "options"
 		
 		JMenuItem aPropos = new JMenuItem("A propos");
 		aPropos.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
@@ -221,10 +225,16 @@ public class Fenetre extends JFrame {
 		option.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 //		option.addActionListener(new OptionAction());
 		
+		JMenuItem appPwd = new JMenuItem("Changer le mot de passe applicatif  [non implémenté]");
+		appPwd.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
+		appPwd.addActionListener(new ChangePasswordAction());
+		
 		aide.add(aPropos);
 		aide.add(versions);
 		aide.add(manuel);
 		aide.add(option);
+		aide.addSeparator();
+		aide.add(appPwd);
 	}
 
 	/**
@@ -268,7 +278,6 @@ public class Fenetre extends JFrame {
 		ArrayList<Identifiant> identifiants = new ArrayList<Identifiant>();
 		
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			Object[] importDial = ImportationDialog.open(Fenetre.this);
 			System.out.println(importDial[0]);// valeur du bouton cliqué {int}
 			System.out.println(importDial[1]);// chemin du fichier {String}
@@ -327,7 +336,7 @@ public class Fenetre extends JFrame {
 	private class ExportAsCSVAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub			
+			// TODO: Exporter les identifiants au format CSV		
 		}		
 	}// END inner class ExportAsCSVAction
 	
@@ -346,7 +355,7 @@ public class Fenetre extends JFrame {
 			int nbColonnes = headers.length;
 			int nbLignes = datas.size();
 			
-			// TODO: Proposer à l'utilisateur de saisir le répertoire d'enregistrement
+			// Propose à l'utilisateur de saisir le répertoire d'enregistrement
 			JFileChooser saveChooser = new JFileChooser();
 			FileNameExtensionFilter pdfFilter = new FileNameExtensionFilter("Extension .pdf", "pdf");
 			saveChooser.setFileFilter(pdfFilter);
@@ -425,7 +434,7 @@ public class Fenetre extends JFrame {
 	private class ExportAsTXTAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub			
+			// TODO: Exporter les identifiants au format TXT			
 		}		
 	}// END inner class ExportAsTXTAction
 	
@@ -518,5 +527,47 @@ public class Fenetre extends JFrame {
 			new NoteVersionDialog(Fenetre.this);
 		}		
 	}// END inner class NoteVersionAction
+	
+	/**
+	 * 
+	 * @author Sainsain
+	 *
+	 */
+	private class ChangePasswordAction extends AbstractAction {
+		
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<Identifiant> identifiants = null;
+			/** res[0]: bouton cliqué, res[1]: ancien mot de passe, res[2]: nouveau mot de passe */
+			Object[] res = {AppPasswordAlterationDialog.DEFAULT_BTN, null, null};
+			do {
+				res = AppPasswordAlterationDialog.open(Fenetre.this);
+			} while((int) res[0] == AppPasswordAlterationDialog.OK_BTN && res[1] == null && res[2] == null);
+			
+			// Vérifie si l'ancien mot de passe (saisi par l'utilisateur) est différent du mot de passe applicatif
+			MdpApp mdpApp = FileDAO.getInstance().getAppPassword(new File("./mdpmngr.cfg"));// récupère le mot de passe applicatif (crypté)
+			String oldMdpApp = DigestUtils.sha256Hex(((String) res[1]).getBytes());// chiffre le mot de passe
+			if (!oldMdpApp.equals(mdpApp.getMdpSha256())) {
+				AppUtils.showUserMessage("Echec : L'ancien mot de passe et le mot de passe applicatif sont différents.", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			// Sinon, remplace le mot de passe applicatif par le nouveau
+			String mdpEncrypted = DigestUtils.sha256Hex(((String) res[2]).getBytes());
+			boolean mdpSaved = FileDAO.getInstance().saveAppPassword(new MdpApp(mdpEncrypted), new File("./mdpmngr.cfg"));
+			
+			// si le nouveau mot de passe n'a pas été enregistré, on annule tout
+			if (!mdpSaved) {
+				AppUtils.showUserMessage("Echec de l'enregistrement du nouveau mot de passe.", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			// sinon, on crypte les identifiants avec la nouvelle clef (=le nouveau mot de passe)
+			SQLiteDAO.getInstance().setKey((String) res[2]);// affecte la nouvelle clef (= le nouveau mot de passe)
+			identifiants = identifiantTM.getIdentifiants();
+			for (int i=0; i<identifiants.size(); i++) {
+				SQLiteDAO.getInstance().update(identifiants.get(i));
+			}
+		}		
+	}// END inner class ChangePasswordAction
 	
 }// END class Fenetre

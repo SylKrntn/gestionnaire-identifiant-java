@@ -82,7 +82,7 @@ public class AddIdentifiantDialog extends JDialog  {
 				char[] mdp = mdpJpf.getPassword();
 				String mdpStr = AppUtils.charTabToString(mdp);
 				
-				// Teste si les paramètres sont valides
+				// Teste si les paramètres ne sont pas valides
 				if (!AppUtils.isValid(site) || !AppUtils.isValid(login) || !AppUtils.isValid(mdpStr)) {
 					AppUtils.setConsoleMessage("ERREUR : paramètres invalides ! Impossible d'enregistrer la saisie", AddIdentifiantDialog.class, MessageType.ERROR, 88, AppParams.DEBUG_MODE);
 					return;

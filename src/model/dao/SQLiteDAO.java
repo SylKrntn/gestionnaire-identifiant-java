@@ -352,6 +352,7 @@ public class SQLiteDAO implements Observable {
 	 * @param login : le login
 	 * @param mdpB : le mot de passe
 	 * @param site : le site pour lequel on veut mettre à jour les identifiants de connexion
+	 * @deprecated
 	 */
 	public void update(String login, char[] mdpB, String site) {
 		String query = null;
@@ -595,4 +596,38 @@ public class SQLiteDAO implements Observable {
 			dataSaved = false;
 		}		
 	}
+
+	public void update(Identifiant identifiant) {
+		Connection c = null;
+		PreparedStatement prepStmt = null;
+		final String QUERY = "UPDATE identifiants SET login = ?, mdp = ? WHERE site = ?";
+		byte[] loginEncrypted = encrypt(identifiant.getLogin(), this.clef);
+		byte[] mdpEncrypted = encrypt(identifiant.getMdp(), this.clef);
+		
+		try {
+			c = this.openDB();
+			c.setAutoCommit(false);
+			prepStmt = c.prepareStatement(QUERY);
+			
+			prepStmt.setBytes(1, loginEncrypted);
+			prepStmt.setBytes(2, mdpEncrypted);
+			prepStmt.setString(3, identifiant.getSite());
+			
+			prepStmt.executeUpdate();
+			c.commit();
+			AppUtils.setConsoleMessage("Succès de la mise à jour de l'identifiant.", SQLiteDAO.class, MessageType.INFORMATION, 618, AppParams.DEBUG_MODE);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			 try {
+				 if (prepStmt != null) { prepStmt.close(); }
+				 if (c != null) { c.close(); }
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}
+	}
+	
 }// END class SQLiteDAO
