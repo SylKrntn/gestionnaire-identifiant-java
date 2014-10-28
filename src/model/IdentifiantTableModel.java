@@ -13,6 +13,7 @@ import model.dao.SQLiteDAO;
 public class IdentifiantTableModel extends AbstractTableModel implements Observer {
 	private final String[] ENTETE = {"SITE", "LOGIN", "MOT DE PASSE"};
 	private ArrayList<Identifiant> identifiants = null;
+	private ArrayList<Identifiant> deletedLogins = new ArrayList<Identifiant>();
 
 	//
 	// GETTERS
@@ -23,6 +24,21 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 
 	public ArrayList<Identifiant> getIdentifiants() {
 		return this.identifiants;
+	}
+	
+	public ArrayList<Identifiant> getDeletedLogins() {
+		if (this.deletedLogins != null && this.deletedLogins.size() > 0) {
+			return this.deletedLogins;
+		}
+		return null;
+	}
+	
+	public Identifiant getLastDeletedLogin() {
+		if (this.deletedLogins != null && this.deletedLogins.size() > 0) {
+			int lastLoginIndex = this.deletedLogins.size() - 1;
+			return this.deletedLogins.get(lastLoginIndex);
+		}
+		return null;
 	}
 
 	//
@@ -125,6 +141,7 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 		System.out.println("nb d'identfiants avant suppression : " + this.getRowCount());
 		System.out.println(rowIndex);
 		listSites();
+		this.deletedLogins.add(this.identifiants.get(rowIndex));// mémorise l'identifiant supprimé pour pouvoir annuler sa suppression par la suite, si l'utilisateur le souhaite
 		this.identifiants.remove(rowIndex);
 		System.out.println("nb d'identfiants  après suppression : " + this.getRowCount());
 		this.fireTableRowsDeleted(rowIndex, rowIndex);
@@ -138,12 +155,19 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 		this.addIdentifiant((Identifiant) obj);
 	}
 	
+	/**
+	 * 
+	 */
 	public void listSites() {
 		for (int i=0; i<identifiants.size(); i++) {
 			System.out.println("identifiants[" + i + "] = " +identifiants.get(i).getSite());
 		}
 	}
 
+	/**
+	 * 
+	 * @param identifiants
+	 */
 	public void setIdentifiants(ArrayList<Identifiant> identifiants) {
 		ArrayList<Identifiant> oldIdentifiants = getIdentifiants();
 		this.identifiants = identifiants;// affecte la liste d'identifiants (importée d'un fichier) à la liste du modèle
@@ -154,6 +178,14 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 			}
 			this.fireTableDataChanged();// notifie à la table de se mettre à jour dans l'interface
 		}		
+	}
+
+	/**
+	 * 
+	 */
+	public void removeLastDeletedLogin() {
+		int indice = this.deletedLogins.size() - 1;
+		this.deletedLogins.remove(indice);
 	}
 
 }// END class IdentifiantTableModel

@@ -179,6 +179,10 @@ public class Fenetre extends JFrame {
 		edition = new JMenu("Edition");
 		edition.setMnemonic(KeyEvent.VK_E);
 		
+		JMenuItem abortSuppression = new JMenuItem("Annuler la suppression");
+		abortSuppression.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		abortSuppression.addActionListener(new AbortSuppressionAction());
+		
 		JMenuItem addIdentifiant = new JMenuItem("Ajouter un identifiant");
 		addIdentifiant.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		addIdentifiant.addActionListener(new AddIdentifiantAction());
@@ -187,6 +191,8 @@ public class Fenetre extends JFrame {
 		delIdentifiant.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 		delIdentifiant.addActionListener(new DelIdentifiantAction());
 		
+		edition.add(abortSuppression);
+		edition.addSeparator();
 		edition.add(addIdentifiant);
 		edition.add(delIdentifiant);
 	}
@@ -422,6 +428,25 @@ public class Fenetre extends JFrame {
 			// TODO Auto-generated method stub			
 		}		
 	}// END inner class ExportAsTXTAction
+	
+	/**
+	 * 
+	 * @author Sainsain
+	 *
+	 */
+	private class AbortSuppressionAction extends AbstractAction {
+		
+		public void actionPerformed(ActionEvent e) {
+			Identifiant lastDeletedIdentifiant = identifiantTM.getLastDeletedLogin();
+			if (lastDeletedIdentifiant == null) {
+				return;
+			}
+			SQLiteDAO.getInstance().save(lastDeletedIdentifiant.getSite(), lastDeletedIdentifiant.getLogin(), lastDeletedIdentifiant.getMdp());
+			if (SQLiteDAO.getInstance().isDataSaved()) {
+				identifiantTM.removeLastDeletedLogin();
+			}
+		}		
+	}// END inner class AbortSuppressionAction
 	
 	/**
 	 * 
