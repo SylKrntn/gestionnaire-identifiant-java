@@ -6,7 +6,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +18,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -159,11 +165,11 @@ public class Fenetre extends JFrame {
 		JMenu exportAs = new JMenu("Exporter au format...");
 		JMenuItem exportAsCSV = new JMenuItem("CSV [non implémenté]");
 		JMenuItem exportAsPDF = new JMenuItem("PDF");
-		JMenuItem exportAsTXT = new JMenuItem("TXT [non implémenté]");
+		JMenuItem exportAsTXT = new JMenuItem("TXT");
 		
 //		exportAsCSV.addActionListener(new ExportAsCSVAction());
 		exportAsPDF.addActionListener(new ExportAsPDFAction());
-//		exportAsTXT.addActionListener(new ExportAsTXTAction());
+		exportAsTXT.addActionListener(new ExportAsTXTAction());
 		
 		exportAs.add(exportAsCSV);
 		exportAs.add(exportAsPDF);
@@ -225,7 +231,7 @@ public class Fenetre extends JFrame {
 		option.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 //		option.addActionListener(new OptionAction());
 		
-		JMenuItem appPwd = new JMenuItem("Changer le mot de passe applicatif  [non implémenté]");
+		JMenuItem appPwd = new JMenuItem("Changer le mot de passe applicatif");
 		appPwd.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
 		appPwd.addActionListener(new ChangePasswordAction());
 		
@@ -278,21 +284,21 @@ public class Fenetre extends JFrame {
 		ArrayList<Identifiant> identifiants = new ArrayList<Identifiant>();
 		
 		public void actionPerformed(ActionEvent e) {
-			Object[] importDial = ImportationDialog.open(Fenetre.this);
-			System.out.println(importDial[0]);// valeur du bouton cliqué {int}
-			System.out.println(importDial[1]);// chemin du fichier {String}
-			System.out.println(importDial[2]);// séparateur {String}
-			System.out.println(importDial[3]);// présence d'une en-tête de colonne {boolean}
+			Object[] importDialConfig = ImportationDialog.open(Fenetre.this);
+			System.out.println(importDialConfig[0]);// valeur du bouton cliqué {int}
+			System.out.println(importDialConfig[1]);// chemin du fichier {String}
+			System.out.println(importDialConfig[2]);// séparateur {String}
+			System.out.println(importDialConfig[3]);// présence d'une en-tête de colonne {boolean}
 			
 			BufferedReader br = null;
 			try {
-				br = new BufferedReader(new FileReader((String) importDial[1]));// ouverture d'un flux de lecture du fichier
+				br = new BufferedReader(new FileReader((String) importDialConfig[1]));// ouverture d'un flux de lecture du fichier
 				String line = null;
-				if ((boolean) importDial[3]) {
+				if ((boolean) importDialConfig[3]) {
 					br.readLine();// saute le titre
 				}
 				while ((line = br.readLine()) != null) {
-					String[] splitedIdentifiant = line.split((String) importDial[2]);
+					String[] splitedIdentifiant = line.split((String) importDialConfig[2]);
 					if (splitedIdentifiant.length == 3) {
 						identifiants.add(new Identifiant(splitedIdentifiant[0], splitedIdentifiant[1], splitedIdentifiant[2]));
 					}
@@ -432,9 +438,65 @@ public class Fenetre extends JFrame {
 	 *
 	 */
 	private class ExportAsTXTAction extends AbstractAction {
-		@Override
+		
 		public void actionPerformed(ActionEvent e) {
-			// TODO: Exporter les identifiants au format TXT			
+			final String DEFAULT_FILE_PATH = "./identifiants.txt";
+			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
+			String separateur = ";";
+			String[] headers = null;// en-têtes de colonnes
+			ArrayList<Identifiant> datas = identifiantTM.getIdentifiants();// les données (identifiants)
+			
+			
+			Object[] txtExportationConfig = TxtExportationDialog.open(Fenetre.this);
+			System.out.println(txtExportationConfig[0]);// valeur du bouton cliqué {int}
+			System.out.println(txtExportationConfig[1]);// chemin du fichier {String}
+			System.out.println(txtExportationConfig[2]);// séparateur {String}
+			System.out.println(txtExportationConfig[3]);// les en-têtes de colonne {String}
+			
+			// si l'utilisateur a cliqué sur OK, on récupère les données
+			if ((int) txtExportationConfig[0] == TxtExportationDialog.OK_BTN) {
+				filePath = (String) txtExportationConfig[1] == null ? DEFAULT_FILE_PATH : (String) txtExportationConfig[1];
+				headers = (String) txtExportationConfig[3] == null ? null : ((String) txtExportationConfig[3]).split(";");
+				separateur = (String) txtExportationConfig[2];
+			}
+			// sinon, il a cliqué sur la "croix" ou "annuler"
+			else {
+				return;
+			}
+			
+			// Trie par ordre croissant tous les identifiants en fonction du nom du site web
+			Collections.sort(datas, new Comparator<Identifiant>() {
+				public int compare(Identifiant a, Identifiant b) {
+					return a.getSite().compareTo(b.getSite());
+				}
+			});
+			
+			// prépare le fichier TXT
+			try {
+				BufferedWriter bw = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8);
+				
+				String out = "";
+				if ( headers != null && headers.length == 3) {
+					bw.write(headers[0] + separateur + headers[1] + separateur + headers[2]);
+					bw.newLine();
+				}
+				
+				for (int i=0; i<datas.size(); i++) {
+					bw.write(datas.get(i).getSite() + separateur + datas.get(i).getLogin() + separateur + datas.get(i).getMdp());
+					if (i < datas.size() -1) {
+						bw.newLine();
+					}
+				}
+//				bw.append(out);
+//				bw.write(out);
+				bw.close();
+				AppUtils.showUserMessage("Succès de l'exportation au format TXT.", JOptionPane.INFORMATION_MESSAGE);
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		}		
 	}// END inner class ExportAsTXTAction
 	
@@ -543,6 +605,8 @@ public class Fenetre extends JFrame {
 				res = AppPasswordAlterationDialog.open(Fenetre.this);
 			} while((int) res[0] == AppPasswordAlterationDialog.OK_BTN && res[1] == null && res[2] == null);
 			
+			if ((int) res[0] != AppPasswordAlterationDialog.OK_BTN) { return; }
+			
 			// Vérifie si l'ancien mot de passe (saisi par l'utilisateur) est différent du mot de passe applicatif
 			MdpApp mdpApp = FileDAO.getInstance().getAppPassword(new File("./mdpmngr.cfg"));// récupère le mot de passe applicatif (crypté)
 			String oldMdpApp = DigestUtils.sha256Hex(((String) res[1]).getBytes());// chiffre le mot de passe
@@ -561,6 +625,8 @@ public class Fenetre extends JFrame {
 				return;
 			}
 			
+			AppUtils.showUserMessage("Succès de l'enregistrement du nouveau mot de passe.", JOptionPane.INFORMATION_MESSAGE);
+						
 			// sinon, on crypte les identifiants avec la nouvelle clef (=le nouveau mot de passe)
 			SQLiteDAO.getInstance().setKey((String) res[2]);// affecte la nouvelle clef (= le nouveau mot de passe)
 			identifiants = identifiantTM.getIdentifiants();

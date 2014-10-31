@@ -186,7 +186,7 @@ public class SQLiteDAO implements Observable {
 	      AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 186, AppParams.DEBUG_MODE);
 	      
 	      stmt = c.createStatement();
-	      ResultSet rs = stmt.executeQuery("SELECT * FROM identifiants ORDER BY id DESC;");
+	      ResultSet rs = stmt.executeQuery("SELECT * FROM identifiants ORDER BY site");
 	      while ( rs.next() ) {
 	         int id = rs.getInt("id");
 	         String site = rs.getString("site");
@@ -235,9 +235,10 @@ public class SQLiteDAO implements Observable {
 	}// END fetchAll()
 	
 	/**
-	 * 
-	 * @param siteName
-	 * @return
+	 * Récupère les identifiants de connexion du site spécifié
+	 * @param siteName {String} : le nom du site pour lequel on veut récupérer les identifiants
+	 * @return les identifiants du site en cas de succès, NULL sinon
+	 * @deprecated
 	 */
 	public Identifiant fetch(String siteName) {
 		Connection c = null;

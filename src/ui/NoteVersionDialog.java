@@ -37,20 +37,36 @@ public class NoteVersionDialog extends JDialog {
 		textPane.setEditable(false);
 		textPane.setSize(WIDTH - 2, HEIGHT - 2);
 		
-		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.4
-		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 28/10/2014
+		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.5
+		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 31/10/2014
+		
+		content += "<br /><strong>Nouveautés</strong> : ";
+		content += "<ul>";
+		content += "<li>Affichage des identifiants triés par ordre croissant des sites</li>";
+		content += "<li>Exportation des données au format TXT</li>";
+		content += "<li>Exportation des données au format CSV</li>";
+		content += "</ul>";
+		
+		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
+		content += "<ul>";
+		content += "<li>Ajout des boîtes de dialogues \"Manuel utilisateur\" et \"Options\"</li>";
+		content += "<li>Importer les données au format PDF</li>";
+		content += "</ul></p><hr>";// END maj
+		
+		content += "<p><strong>Version</strong> : 1.4";// v1.4
+		content += "<br/><strong>Date de mise à jour</strong> : 28/10/2014";// 28/10/2014
 		
 		content += "<br /><strong>Nouveautés</strong> : ";
 		content += "<ul>";
 		content += "<li>Les données affichées dans la table, après l'importation d'identifiants à partir d'un fichier, reflètent celles présentes en BDD</li>";
 		content += "<li>Possibilité d'annuler la dernière suppression d'identifiant</li>";
+		content += "<li>Possibilité de changer le mot de passe de l'application</li>";
 		content += "</ul>";
 		
 		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
 		content += "<ul>";
 		content += "<li>Ajout des boîtes de dialogues \"Manuel utilisateur\" et \"Options\"</li>";
 		content += "<li>Exporter les données aux formats CSV et TXT</li>";
-		content += "<li>Ajouter la possibilité de changer le mot de passe utilisateur</li>";
 		content += "</ul></p><hr>";// END maj
 		
 		content += "<p><strong>Version</strong> : 1.3";// v1.3
