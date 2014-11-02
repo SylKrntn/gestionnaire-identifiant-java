@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -17,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class TxtExportationDialog extends JDialog {
+public class XlsExportationDialog extends JDialog {
 
 	public static final int OK_BTN = 1;
 	public static final int CANCEL_BTN = 2;// même valeur que DISPOSE_ON_CLOSE
@@ -33,7 +34,7 @@ public class TxtExportationDialog extends JDialog {
 	
 	private static Object[] objToReturn = {DEFAULT_BTN, null, ";", null};
 	
-	private final String TITLE = "Exportation des données au format TXT";
+	private final String TITLE = "Exportation des données au format XLS";
 	private final int WIDTH = 320;
 	private final int HEIGHT = 240;
 	private JPanel btnPane;
@@ -41,7 +42,7 @@ public class TxtExportationDialog extends JDialog {
 	private JTextField headerJtf;
 	
 	
-	private TxtExportationDialog(JFrame parent) {
+	private XlsExportationDialog(JFrame parent) {
 		this.setTitle(TITLE);
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 		this.setSize(WIDTH, HEIGHT);
@@ -74,7 +75,7 @@ public class TxtExportationDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				// initialise le jfilechooser
 				JFileChooser jfc = new JFileChooser();
-				FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("Extension .TXT", "txt");
+				FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("Extension .XLS", "xls");
 				jfc.setFileFilter(txtFilter);
 				// affiche le jfilechooser et récupère le bouton cliqué
 				int btnClicked = jfc.showSaveDialog(jb);
@@ -170,7 +171,7 @@ public class TxtExportationDialog extends JDialog {
 					return;
 				}
 				else {
-					TxtExportationDialog.this.dispose();
+					XlsExportationDialog.this.dispose();
 				}
 			}				
 		});
@@ -181,7 +182,7 @@ public class TxtExportationDialog extends JDialog {
 				objToReturn[1] = null;
 				objToReturn[2] = ";";
 				objToReturn[3] = null;
-				TxtExportationDialog.this.dispose();// ferme et détruit la boîte de dialogue
+				XlsExportationDialog.this.dispose();// ferme et détruit la boîte de dialogue
 			}
 		});
 		
@@ -195,7 +196,7 @@ public class TxtExportationDialog extends JDialog {
 		objToReturn[1] = null;
 		objToReturn[2] = ";";
 		objToReturn[3] = null;
-		TxtExportationDialog dial = new TxtExportationDialog(parent);
+		XlsExportationDialog dial = new XlsExportationDialog(parent);
 		dial.setVisible(true);
 		return objToReturn;
 	}

@@ -68,6 +68,13 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.WorkbookUtil;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -152,28 +159,34 @@ public class Fenetre extends JFrame {
 		JMenuItem importFromCSV = new JMenuItem("CSV");
 		JMenuItem importFromPDF = new JMenuItem("PDF [nom implémenté]");
 		JMenuItem importFromTXT = new JMenuItem("TXT");
+		JMenuItem importFromXLS = new JMenuItem("XLS [non implémenté]");
 		
 		importFromCSV.addActionListener(new ImportFromCSVOrTXTAction());
 //		importFromPDF.addActionListener(new ImportFromPDFAction());
 		importFromTXT.addActionListener(new ImportFromCSVOrTXTAction());
+//		importFromXLS.addActionListener(new ImportFromXLSAction());
 		
 		importFrom.add(importFromCSV);
 		importFrom.add(importFromPDF);
 		importFrom.add(importFromTXT);
+		importFrom.add(importFromXLS);
 		
 		// EXPORTER
 		JMenu exportAs = new JMenu("Exporter au format...");
-		JMenuItem exportAsCSV = new JMenuItem("CSV [non implémenté]");
+		JMenuItem exportAsCSV = new JMenuItem("CSV");
 		JMenuItem exportAsPDF = new JMenuItem("PDF");
 		JMenuItem exportAsTXT = new JMenuItem("TXT");
+		JMenuItem exportAsXLS = new JMenuItem("XLS");
 		
-//		exportAsCSV.addActionListener(new ExportAsCSVAction());
+		exportAsCSV.addActionListener(new ExportAsCSVAction());
 		exportAsPDF.addActionListener(new ExportAsPDFAction());
 		exportAsTXT.addActionListener(new ExportAsTXTAction());
+		exportAsXLS.addActionListener(new ExportAsXLSAction());
 		
 		exportAs.add(exportAsCSV);
 		exportAs.add(exportAsPDF);
 		exportAs.add(exportAsTXT);
+		exportAs.add(exportAsXLS);
 		
 		// AJOUT DES SOUS-MENUS AU MENU
 		fichier.add(importFrom);
@@ -340,9 +353,63 @@ public class Fenetre extends JFrame {
 	 *
 	 */
 	private class ExportAsCSVAction extends AbstractAction {
-		@Override
+		
 		public void actionPerformed(ActionEvent e) {
-			// TODO: Exporter les identifiants au format CSV		
+			final String DEFAULT_FILE_PATH = "./identifiants.csv";
+			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
+			String separateur = ";";
+			String[] headers = null;// en-têtes de colonnes
+			ArrayList<Identifiant> datas = identifiantTM.getIdentifiants();// les données (identifiants)
+			
+			
+			Object[] CsvExportationConfig = CsvExportationDialog.open(Fenetre.this);
+			System.out.println(CsvExportationConfig[0]);// valeur du bouton cliqué {int}
+			System.out.println(CsvExportationConfig[1]);// chemin du fichier {String}
+			System.out.println(CsvExportationConfig[2]);// séparateur {String}
+			System.out.println(CsvExportationConfig[3]);// les en-têtes de colonne {String}
+			
+			// si l'utilisateur a cliqué sur OK, on récupère les données
+			if ((int) CsvExportationConfig[0] == CsvExportationDialog.OK_BTN) {
+				filePath = (String) CsvExportationConfig[1] == null ? DEFAULT_FILE_PATH : (String) CsvExportationConfig[1];
+				headers = (String) CsvExportationConfig[3] == null ? null : ((String) CsvExportationConfig[3]).split(";");
+				separateur = (String) CsvExportationConfig[2];
+			}
+			// sinon, il a cliqué sur la "croix" ou "annuler"
+			else {
+				return;
+			}
+			
+			// Trie par ordre croissant tous les identifiants en fonction du nom du site web
+			Collections.sort(datas, new Comparator<Identifiant>() {
+				public int compare(Identifiant a, Identifiant b) {
+					return a.getSite().compareTo(b.getSite());
+				}
+			});
+			
+			// prépare le fichier CSV
+			try {
+				BufferedWriter bw = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8);
+				
+				String out = "";
+				if ( headers != null && headers.length == 3) {
+					bw.write(headers[0] + separateur + headers[1] + separateur + headers[2]);
+					bw.newLine();
+				}
+				
+				for (int i=0; i<datas.size(); i++) {
+					bw.write(datas.get(i).getSite() + separateur + datas.get(i).getLogin() + separateur + datas.get(i).getMdp());
+					if (i < datas.size() -1) {
+						bw.newLine();
+					}
+				}
+				bw.close();
+				AppUtils.showUserMessage("Succès de l'exportation au format CSV.", JOptionPane.INFORMATION_MESSAGE);
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		}		
 	}// END inner class ExportAsCSVAction
 	
@@ -424,7 +491,7 @@ public class Fenetre extends JFrame {
 				document.add(paragraphe);
 				document.add(pdfTable);
 				document.close();
-				AppUtils.showUserMessage("Fichier PDF créé avec succès.", JOptionPane.INFORMATION_MESSAGE);
+				AppUtils.showUserMessage("Succès de l'exportation au format PDF.", JOptionPane.INFORMATION_MESSAGE);
 			} catch (DocumentException | FileNotFoundException e1) {
 				AppUtils.showUserMessage("Une erreur est survenue lors de l'exportation. Le fichier n'a pas été créé.", JOptionPane.INFORMATION_MESSAGE);
 				e1.printStackTrace();
@@ -487,8 +554,6 @@ public class Fenetre extends JFrame {
 						bw.newLine();
 					}
 				}
-//				bw.append(out);
-//				bw.write(out);
 				bw.close();
 				AppUtils.showUserMessage("Succès de l'exportation au format TXT.", JOptionPane.INFORMATION_MESSAGE);
 				
@@ -499,6 +564,130 @@ public class Fenetre extends JFrame {
 			
 		}		
 	}// END inner class ExportAsTXTAction
+	
+	/**
+	 * 
+	 * @author Sainsain
+	 *
+	 */
+	private class ExportAsXLSAction extends AbstractAction {
+		
+		public void actionPerformed(ActionEvent e) {
+			final String DEFAULT_FILE_PATH = "./identifiants.xls";
+			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
+			FileOutputStream fos = null;
+			String separateur = ";";
+			String[] headers = null;// en-têtes de colonnes
+			ArrayList<Identifiant> datas = identifiantTM.getIdentifiants();// les données (identifiants)
+			int nbColonnes = identifiantTM.getColumnCount();
+			int nbLignes = identifiantTM.getRowCount();
+			
+			
+			Object[] txtExportationConfig = XlsExportationDialog.open(Fenetre.this);
+			System.out.println(txtExportationConfig[0]);// valeur du bouton cliqué {int}
+			System.out.println(txtExportationConfig[1]);// chemin du fichier {String}
+			System.out.println(txtExportationConfig[2]);// séparateur {String}
+			System.out.println(txtExportationConfig[3]);// les en-têtes de colonne {String}
+			
+			// si l'utilisateur a cliqué sur OK, on récupère les données
+			if ((int) txtExportationConfig[0] == XlsExportationDialog.OK_BTN) {
+				filePath = (String) txtExportationConfig[1] == null ? DEFAULT_FILE_PATH : (String) txtExportationConfig[1];
+				headers = (String) txtExportationConfig[3] == null ? null : ((String) txtExportationConfig[3]).split(";");
+				separateur = (String) txtExportationConfig[2];
+			}
+			// sinon, il a cliqué sur la "croix" ou "annuler"
+			else {
+				return;
+			}
+			
+			// Trie par ordre croissant tous les identifiants en fonction du nom du site web
+			Collections.sort(datas, new Comparator<Identifiant>() {
+				public int compare(Identifiant a, Identifiant b) {
+					return a.getSite().compareTo(b.getSite());
+				}
+			});
+			
+			// prépare le fichier XLS
+			try {
+				HSSFWorkbook classeur = new HSSFWorkbook();
+				HSSFSheet feuille = classeur.createSheet("Identifiants");
+				
+				// s'il y a une en-tête de colonne
+				if (headers != null && headers.length == 3) {
+					// on ajoute l'en-tête
+					HSSFRow entete = feuille.createRow(0);// première ligne = en-tête
+					for (int i=0; i<headers.length; i++) {
+						HSSFCell cellule = entete.createCell(i, HSSFCell.CELL_TYPE_STRING);
+						cellule.setCellValue(headers[i]);
+					}
+					
+					// on ajoute les identifiants
+					for (int i=0; i<datas.size(); i++) {
+						HSSFRow ligne = feuille.createRow(i+1);
+						
+						for (int j=0; j<nbColonnes; j++) {
+							HSSFCell cellule = ligne.createCell(j, HSSFCell.CELL_TYPE_STRING);
+
+							switch(j) {
+								case 0:
+									cellule.setCellValue(datas.get(i).getSite());
+									break;
+								case 1:
+									cellule.setCellValue(datas.get(i).getLogin());
+									break;
+								case 2:
+									cellule.setCellValue(datas.get(i).getMdp());
+									break;
+								default:
+									System.out.println("L'indice dépasse l'indice maximum de colonnes");
+									break;
+							}
+						}
+					}
+				}
+				// sinon, il n'y a pas d'en-tête
+				else {
+					// on ajoute les identifiants
+					for (int i=0; i<datas.size(); i++) {
+						HSSFRow ligne = feuille.createRow(i);
+						
+						for (int j=0; j<nbColonnes; j++) {
+							HSSFCell cellule = ligne.createCell(j, HSSFCell.CELL_TYPE_STRING);
+
+							switch(j) {
+								case 0:
+									cellule.setCellValue(datas.get(i).getSite());
+									break;
+								case 1:
+									cellule.setCellValue(datas.get(i).getLogin());
+									break;
+								case 2:
+									cellule.setCellValue(datas.get(i).getMdp());
+									break;
+								default:
+									System.out.println("L'indice dépasse l'indice maximum de colonnes");
+									break;
+							}
+						}
+					}
+				}
+				fos = new FileOutputStream(new File(filePath));
+				classeur.write(fos);
+				AppUtils.showUserMessage("Succès de l'exportation au format XLS.", JOptionPane.INFORMATION_MESSAGE);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				if (fos != null) {
+					try {
+						fos.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		}		
+	}// END inner class ExportAsCSVAction
 	
 	/**
 	 * 
