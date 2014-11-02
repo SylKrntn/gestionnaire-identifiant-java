@@ -159,12 +159,12 @@ public class Fenetre extends JFrame {
 		JMenuItem importFromCSV = new JMenuItem("CSV");
 		JMenuItem importFromPDF = new JMenuItem("PDF [nom implémenté]");
 		JMenuItem importFromTXT = new JMenuItem("TXT");
-		JMenuItem importFromXLS = new JMenuItem("XLS [non implémenté]");
+		JMenuItem importFromXLS = new JMenuItem("XLS");
 		
 		importFromCSV.addActionListener(new ImportFromCSVOrTXTAction());
 //		importFromPDF.addActionListener(new ImportFromPDFAction());
 		importFromTXT.addActionListener(new ImportFromCSVOrTXTAction());
-//		importFromXLS.addActionListener(new ImportFromXLSAction());
+		importFromXLS.addActionListener(new ImportFromXLSAction());
 		
 		importFrom.add(importFromCSV);
 		importFrom.add(importFromPDF);
@@ -346,6 +346,108 @@ public class Fenetre extends JFrame {
 			}
 		}		
 	}// END inner class ImportFromCSVAction
+	
+	/**
+	 * 
+	 * @author Sainsain
+	 *
+	 */
+	private class ImportFromXLSAction extends AbstractAction {
+		
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<Identifiant> datas = new ArrayList<Identifiant>();
+			FileInputStream fis = null;
+			
+			Object[] xlsConfig = XlsImportationDialog.open(Fenetre.this);
+			// xlsConfig[0] {int} = bouton cliqué
+			// xlsConfig[1] {String} = chemin du fichier
+			// xlsConfig[3] {boolean} = présence d'une en-tête
+			
+			if (xlsConfig[1] == null) {
+				return;
+			}
+			
+			// si l'utilisateur a cliqué sur "OK"
+			if ((int) xlsConfig[0] == XlsImportationDialog.OK_BTN) {
+				try {
+					fis = new FileInputStream(new File((String) xlsConfig[1]));
+					
+					HSSFWorkbook classeur = new HSSFWorkbook(fis);
+					HSSFSheet feuille = classeur.getSheet("Identifiants");
+					int nbCol = feuille.getRow(0).getLastCellNum();
+					int nbLignes = feuille.getLastRowNum();
+					
+					// s'il y a une en-tête de colonne
+					if ((boolean) xlsConfig[2]) {
+						for (int i=1; i<=nbLignes; i++) {
+							HSSFRow ligne = feuille.getRow(i);
+							Identifiant identifiant = new Identifiant();
+							
+							for (int j=0; j<nbCol; j++) {
+								switch(j) {
+									case 0:
+										identifiant.setSite(ligne.getCell(j).getStringCellValue());
+										break;
+									case 1:
+										identifiant.setLogin(ligne.getCell(j).getStringCellValue());
+										break;
+									case 2:
+										identifiant.setMdp(ligne.getCell(j).getStringCellValue());
+										break;
+									default:
+										System.out.println("L'indice dépasse l'indice maximal de colonnes.");
+										break;
+								}
+							}
+							datas.add(identifiant);
+						}
+						identifiantTM.setIdentifiants(datas);
+					}
+					// sinon, il n'y a pas d'en-tête
+					else {
+						for (int i=0; i<=nbLignes; i++) {
+							HSSFRow ligne = feuille.getRow(i);
+							Identifiant identifiant = new Identifiant();
+							
+							for (int j=0; j<nbCol; j++) {
+								switch(j) {
+									case 0:
+										identifiant.setSite(ligne.getCell(j).getStringCellValue());
+										break;
+									case 1:
+										identifiant.setLogin(ligne.getCell(j).getStringCellValue());
+										break;
+									case 2:
+										identifiant.setMdp(ligne.getCell(j).getStringCellValue());
+										break;
+									default:
+										System.out.println("L'indice dépasse l'indice maximal de colonnes.");
+										break;
+								}
+							}
+							datas.add(identifiant);
+						}
+						identifiantTM.setIdentifiants(datas);
+					}
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} finally {
+					try {
+						if (fis != null) fis.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			// sinon, l'utilisateur a cliqué sur la "croix" ou "annuler"
+			else {
+				return;
+			}
+		}
+		
+	}// END inner class ImportFromXLSAction
 	
 	/**
 	 * 
