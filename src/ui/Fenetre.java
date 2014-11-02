@@ -79,8 +79,11 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 import util.MessageType;
 import util.AppParams;
@@ -162,7 +165,7 @@ public class Fenetre extends JFrame {
 		JMenuItem importFromXLS = new JMenuItem("XLS");
 		
 		importFromCSV.addActionListener(new ImportFromCSVOrTXTAction());
-//		importFromPDF.addActionListener(new ImportFromPDFAction());
+		importFromPDF.addActionListener(new ImportFromPDFAction());
 		importFromTXT.addActionListener(new ImportFromCSVOrTXTAction());
 		importFromXLS.addActionListener(new ImportFromXLSAction());
 		
@@ -346,6 +349,119 @@ public class Fenetre extends JFrame {
 			}
 		}		
 	}// END inner class ImportFromCSVAction
+	
+	/**
+	 * 
+	 * @author Sainsain
+	 *
+	 */
+	private class ImportFromPDFAction extends AbstractAction {
+		
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<Identifiant> datas = new ArrayList<Identifiant>();
+			FileInputStream fis = null;
+			
+			Object[] pdfConfig = PdfImportationDialog.open(Fenetre.this);
+			// pdfConfig[0] {int} = bouton cliqué
+			// pdfConfig[1] {String} = chemin du fichier
+			// pdfConfig[3] {boolean} = présence d'une en-tête
+			
+			// si l'utilisateur n'a renseigné aucun fichier, on quitte
+			if (pdfConfig[1] == null) {
+				return;
+			}
+			
+			// si l'utilisateur a cliqué sur "OK"
+			if ((int) pdfConfig[0] == PdfImportationDialog.OK_BTN) {
+				try {
+					fis = new FileInputStream(new File((String) pdfConfig[1]));
+					
+					PdfReader reader = new PdfReader(fis);
+					int nop = reader.getNumberOfPages();
+					
+					// TODO: améliorer algorithme (pb avec les espaces + redondance code)
+					for (int i=0; i<nop; i++) {
+						String page = PdfTextExtractor.getTextFromPage(reader, i+1);
+						String[] lines = page.split("\n");
+						
+						// s'il y a une en-tête de colonne, on passe directement à la ligne suivante
+						if ((boolean) pdfConfig[2]) {
+							
+							// lit les lignes, une par une
+							for (int j=1; j<lines.length; j++) {
+								String[] prop = lines[j].split(" ");// split la ligne en chaque propriété d'un identifiant de connexion
+								Identifiant identifiant = new Identifiant();// initialise un nouvel identifiant
+								
+								// lit les propriétés de l'identifiant, une par une
+								for (int k=0; k<prop.length; k++) {
+									
+									switch(k) {
+										case 0:
+											identifiant.setSite(prop[k]);
+											break;
+										case 1:
+											identifiant.setLogin(prop[k]);
+											break;
+										case 2:
+											identifiant.setMdp(prop[k]);
+											break;
+										default:
+											System.out.println("L'indice dépasse l'indice maximal.");
+											break;
+									}
+								}
+								datas.add(identifiant);
+							}
+						}
+						// s'il n'y a pas d'en-tête de colonne, on commence directement à la première ligne
+						else {
+							// lit les lignes, une par une
+							for (int j=0; j<lines.length; j++) {
+								String[] prop = lines[j].split(" ");// split la ligne en chaque propriété d'un identifiant de connexion
+								Identifiant identifiant = new Identifiant();// initialise un nouvel identifiant
+								
+								// lit les propriétés de l'identifiant, une par une
+								for (int k=0; k<prop.length; k++) {
+									
+									switch(k) {
+										case 0:
+											identifiant.setSite(prop[k]);
+											break;
+										case 1:
+											identifiant.setLogin(prop[k]);
+											break;
+										case 2:
+											identifiant.setMdp(prop[k]);
+											break;
+										default:
+											System.out.println("L'indice dépasse l'indice maximal.");
+											break;
+									}
+								}
+								datas.add(identifiant);
+							}
+						}
+						identifiantTM.setIdentifiants(datas);
+					}
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} finally {
+					try {
+						if (fis != null) fis.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			// sinon, l'utilisateur a cliqué sur la "croix" ou "annuler"
+			else {
+				return;
+			}
+		}
+		
+	}// END inner class ImportFromPDFAction
 	
 	/**
 	 * 

@@ -45,12 +45,14 @@ public class NoteVersionDialog extends JDialog {
 		content += "<li>Exportation des données au format CSV</li>";
 		content += "<li>Exportation des données au format XLS</li>";
 		content += "<li>Importer les données au format XLS</li>";
+		content += "<li>Importer les données au format PDF</li>";
 		content += "</ul>";
 		
 		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
 		content += "<ul>";
 		content += "<li>Ajout des boîtes de dialogues \"Manuel utilisateur\" et \"Options\"</li>";
-		content += "<li>Importer les données au format PDF</li>";
+		content += "<li>Nettoyer et factoriser le code</li>";
+		content += "<li>Améliorer les algorithmes</li>";
 		content += "</ul></p><hr>";// END maj
 		
 		content += "<p><strong>Version</strong> : 1.5";// v1.5

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,7 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class XlsImportationDialog extends JDialog {
+public class PdfImportationDialog extends JDialog {
 
 	public static final int OK_BTN = 1;
 	public static final int CANCEL_BTN = 2;// même valeur que DISPOSE_ON_CLOSE
@@ -31,14 +32,14 @@ public class XlsImportationDialog extends JDialog {
 	
 	private static Object[] objToReturn = {DEFAULT_BTN, null, true};
 	
-	private final String TITLE = "Importation des identifiants à partir d'un fichier XLS";
+	private final String TITLE = "Importation des identifiants à partir d'un fichier PDF";
 	private final int WIDTH = 320;
 	private final int HEIGHT = 240;
 	private JPanel btnPane;
 	private JPanel contentPane;
 	
 	
-	private XlsImportationDialog(JFrame parent) {
+	private PdfImportationDialog(JFrame parent) {
 		this.setTitle(TITLE);
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 		this.setSize(WIDTH, HEIGHT);
@@ -68,8 +69,8 @@ public class XlsImportationDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				// initialise le jfilechooser
 				JFileChooser jfc = new JFileChooser();
-				FileNameExtensionFilter xlsFilter = new FileNameExtensionFilter("Extensions .XLS", "xls");
-				jfc.setFileFilter(xlsFilter);
+				FileNameExtensionFilter pdfFilter = new FileNameExtensionFilter("Extensions .PDF", "pdf");
+				jfc.setFileFilter(pdfFilter);
 				// affiche le jfilechooser et récupère le bouton cliqué
 				int btnClicked = jfc.showOpenDialog(jb);
 				
@@ -131,7 +132,7 @@ public class XlsImportationDialog extends JDialog {
 					return;
 				}
 				else {
-					XlsImportationDialog.this.dispose();
+					PdfImportationDialog.this.dispose();
 				}
 			}				
 		});
@@ -141,7 +142,7 @@ public class XlsImportationDialog extends JDialog {
 				objToReturn[0] = CANCEL_BTN;
 				objToReturn[1] = null;
 				objToReturn[2] = true;
-				XlsImportationDialog.this.dispose();// ferme et détruit la boîte de dialogue
+				PdfImportationDialog.this.dispose();// ferme et détruit la boîte de dialogue
 			}
 		});
 		
@@ -154,7 +155,7 @@ public class XlsImportationDialog extends JDialog {
 		objToReturn[0] = DEFAULT_BTN;
 		objToReturn[1] = null;
 		objToReturn[2] = true;
-		XlsImportationDialog dial = new XlsImportationDialog(parent);
+		PdfImportationDialog dial = new PdfImportationDialog(parent);
 		dial.setVisible(true);
 		return objToReturn;
 	}
