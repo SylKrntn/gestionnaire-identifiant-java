@@ -16,7 +16,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import util.AppUtils;
-
+/**
+ * Classe qui est une fenêtre de dialogue permettant à l'utilisateur de modifier son mot de passe applicatif
+ * @author Sainsain
+ *
+ */
 public class AppPasswordAlterationDialog extends JDialog {
 	public static final int OK_BTN = 1;
 	public static final int CANCEL_BTN = 2;// même valeur que DISPOSE_ON_CLOSE

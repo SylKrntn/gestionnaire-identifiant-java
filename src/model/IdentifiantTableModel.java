@@ -49,14 +49,28 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 		identifiants = SQLiteDAO.getInstance().fetchAll();
 	}
 	
+	/**
+	 * Méthode qui renvoie le nombre d'enregistrements (nb de lignes) dans la table
+	 * @return le nombre d'enregistrements
+	 */
 	public int getRowCount() {
 		return this.identifiants.size();
 	}
 	
+	/**
+	 * Méthode qui renvoie le nombre de champs (nb de colonnes) dans la table
+	 * @return le nombre de champs
+	 */
 	public int getColumnCount() {
 		return this.ENTETE.length;
 	}
 	
+	/**
+	 * Méthode qui renvoie la valeur d'une cellule donnée
+	 * @param rowIndex {int} : l'indice de la ligne
+	 * @param columnIndex {int} : l'indice de la colonne
+	 * @return la valeur que contient la celle en cas de SUCCES, -1 sinon
+	 */
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch(columnIndex) {
 			case 0:
@@ -70,10 +84,22 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 		}
 	}
 	
+	/**
+	 * Méthode qui renvoie le libellé de la colonne
+	 * @param columnIndex {int} : l'indice de la colonne dont on veut récupérer le nom
+	 * @return l'entête de la colonne
+	 */
 	public String getColumnName(int columnIndex) {
 		return this.ENTETE[columnIndex];
 	}
 	
+	/**
+	 * Méthode qui définit si une cellule est éditable ou non.
+	 * Dans le cas présent, toutes les cellules, à l'exception de celles de la première colonne, sont éditables
+	 * @param rowIndex {int} : l'indice de la ligne
+	 * @param columnIndex {int} : l'indice de la colonne
+	 * @return TRUE si la cellule est éditable, FALSE sinon
+	 */
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if (columnIndex > 0) {
 			return true;
@@ -81,6 +107,12 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 		return false;
 	}
 	
+	/**
+	 * Méthode qui définit la nouvelle valeur d'une cellule.
+	 * @param newValue {Object} : la nouvelle valeur à affecter à la cellule
+	 * @param rowIndex {int} : l'indice de la ligne
+	 * @param columnIndex {int} : l'indice de la colonne
+	 */
 	public void setValueAt(Object newValue, int rowIndex, int columnIndex) {
 		String oldValue = null;
 		String siteName = null;
@@ -121,7 +153,7 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 	
 	/**
 	 * Ajoute un identifiant au modèle
-	 * @param obj [Identifiant} : l'identifiant à ajouter au modèle
+	 * @param obj {Identifiant} : l'identifiant à ajouter au modèle
 	 */
 	public void addIdentifiant(Identifiant obj) {
 		if (obj instanceof Identifiant) {
@@ -156,7 +188,7 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 	}
 	
 	/**
-	 * 
+	 * Méthode qui liste (affiche) dans la console, tous les sites que l'utilisateur a entrés en bdd
 	 */
 	public void listSites() {
 		for (int i=0; i<identifiants.size(); i++) {
@@ -165,8 +197,8 @@ public class IdentifiantTableModel extends AbstractTableModel implements Observe
 	}
 
 	/**
-	 * 
-	 * @param identifiants
+	 * Méthode qui ajoute une liste d'identifiants dans la bdd et la table (interface)
+	 * @param identifiants {ArrayList<Identifiant>} : 
 	 */
 	public void setIdentifiants(ArrayList<Identifiant> identifiants) {
 		ArrayList<Identifiant> oldIdentifiants = getIdentifiants();

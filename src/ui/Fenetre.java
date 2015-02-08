@@ -160,7 +160,7 @@ public class Fenetre extends JFrame {
 		// IMPORTER
 		JMenu importFrom = new JMenu("Importer à partir du format...");
 		JMenuItem importFromCSV = new JMenuItem("CSV");
-		JMenuItem importFromPDF = new JMenuItem("PDF [nom implémenté]");
+		JMenuItem importFromPDF = new JMenuItem("PDF");
 		JMenuItem importFromTXT = new JMenuItem("TXT");
 		JMenuItem importFromXLS = new JMenuItem("XLS");
 		
@@ -241,7 +241,7 @@ public class Fenetre extends JFrame {
 		
 		JMenuItem manuel = new JMenuItem("Manuel utilisateur  [non implémenté]");
 		manuel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, ActionEvent.CTRL_MASK));
-//		manuel.addActionListener(new AProposAction());
+//		manuel.addActionListener(new ManuelAction());
 		
 		JMenuItem option = new JMenuItem("Options de configuration  [non implémenté]");
 		option.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -573,7 +573,7 @@ public class Fenetre extends JFrame {
 	private class ExportAsCSVAction extends AbstractAction {
 		
 		public void actionPerformed(ActionEvent e) {
-			final String DEFAULT_FILE_PATH = "./identifiants.csv";
+			final String DEFAULT_FILE_PATH = AppParams.USER_DIR + "/identifiants.csv";
 			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
 			String separateur = ";";
 			String[] headers = null;// en-têtes de colonnes
@@ -639,7 +639,7 @@ public class Fenetre extends JFrame {
 	private class ExportAsPDFAction extends AbstractAction {
 		
 		public void actionPerformed(ActionEvent e) {
-			final String DEFAULT_FILE_PATH = "./identifiants.pdf";
+			final String DEFAULT_FILE_PATH = AppParams.USER_DIR + "/identifiants.pdf";
 			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
 			String[] headers = identifiantTM.getENTETE();// en-têtes de colonnes
 			ArrayList<Identifiant> datas = identifiantTM.getIdentifiants();// les données (identifiants)
@@ -725,7 +725,7 @@ public class Fenetre extends JFrame {
 	private class ExportAsTXTAction extends AbstractAction {
 		
 		public void actionPerformed(ActionEvent e) {
-			final String DEFAULT_FILE_PATH = "./identifiants.txt";
+			final String DEFAULT_FILE_PATH = AppParams.USER_DIR + "/identifiants.txt";
 			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
 			String separateur = ";";
 			String[] headers = null;// en-têtes de colonnes
@@ -791,7 +791,7 @@ public class Fenetre extends JFrame {
 	private class ExportAsXLSAction extends AbstractAction {
 		
 		public void actionPerformed(ActionEvent e) {
-			final String DEFAULT_FILE_PATH = "./identifiants.xls";
+			final String DEFAULT_FILE_PATH = AppParams.USER_DIR + "/identifiants.xls";
 			String filePath = DEFAULT_FILE_PATH;// chemin de sortie du fichier
 			FileOutputStream fos = null;
 			String separateur = ";";
@@ -1015,7 +1015,7 @@ public class Fenetre extends JFrame {
 			if ((int) res[0] != AppPasswordAlterationDialog.OK_BTN) { return; }
 			
 			// Vérifie si l'ancien mot de passe (saisi par l'utilisateur) est différent du mot de passe applicatif
-			MdpApp mdpApp = FileDAO.getInstance().getAppPassword(new File("./mdpmngr.cfg"));// récupère le mot de passe applicatif (crypté)
+			MdpApp mdpApp = FileDAO.getInstance().getAppPassword(new File(AppParams.USER_DIR + "/mdpmngr.cfg"));// récupère le mot de passe applicatif (crypté)
 			String oldMdpApp = DigestUtils.sha256Hex(((String) res[1]).getBytes());// chiffre le mot de passe
 			if (!oldMdpApp.equals(mdpApp.getMdpSha256())) {
 				AppUtils.showUserMessage("Echec : L'ancien mot de passe et le mot de passe applicatif sont différents.", JOptionPane.ERROR_MESSAGE);
@@ -1024,7 +1024,7 @@ public class Fenetre extends JFrame {
 			
 			// Sinon, remplace le mot de passe applicatif par le nouveau
 			String mdpEncrypted = DigestUtils.sha256Hex(((String) res[2]).getBytes());
-			boolean mdpSaved = FileDAO.getInstance().saveAppPassword(new MdpApp(mdpEncrypted), new File("./mdpmngr.cfg"));
+			boolean mdpSaved = FileDAO.getInstance().saveAppPassword(new MdpApp(mdpEncrypted), new File(AppParams.USER_DIR + "/mdpmngr.cfg"));
 			
 			// si le nouveau mot de passe n'a pas été enregistré, on annule tout
 			if (!mdpSaved) {

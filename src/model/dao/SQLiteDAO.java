@@ -66,7 +66,7 @@ public class SQLiteDAO implements Observable {
 	public Connection openDB() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			return DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
+			return DriverManager.getConnection("jdbc:sqlite:" + AppParams.USER_DIR + "/mdpmngr.db");
 		} catch (ClassNotFoundException e) {
 			AppUtils.setConsoleMessage("Erreur : Driver JDBC manquant.", SQLiteDAO.class, MessageType.ERROR, 71, AppParams.DEBUG_MODE);
 			e.printStackTrace();
@@ -181,7 +181,7 @@ public class SQLiteDAO implements Observable {
 	    
 	    try {
 	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
+	      c = DriverManager.getConnection("jdbc:sqlite:" + AppParams.USER_DIR + "/mdpmngr.db");
 	      c.setAutoCommit(false);
 	      AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 186, AppParams.DEBUG_MODE);
 	      
@@ -247,7 +247,7 @@ public class SQLiteDAO implements Observable {
 	    
 	    try {
 	    	Class.forName("org.sqlite.JDBC");
-	    	c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
+	    	c = DriverManager.getConnection("jdbc:sqlite:" + AppParams.USER_DIR + "/mdpmngr.db");
 	    	c.setAutoCommit(false);
 	    	AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 244, AppParams.DEBUG_MODE);
 
@@ -295,8 +295,8 @@ public class SQLiteDAO implements Observable {
 	}// END fetch()
 	
 	/**
-	 * 
-	 * @param siteName
+	 * Méthode qui supprime un enregistrement de la BDD
+	 * @param siteName {String} : le nom du site pour l'enregistrement que l'utilisateur souhaite supprimer
 	 */
 	public void delete(String siteName) {
 		AppUtils.setConsoleMessage("Nom du site : " + siteName, SQLiteDAO.class, MessageType.INFORMATION, 294, AppParams.DEBUG_MODE);
@@ -306,7 +306,7 @@ public class SQLiteDAO implements Observable {
 	    
 	    try {
 	    	Class.forName("org.sqlite.JDBC");
-	    	c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
+	    	c = DriverManager.getConnection("jdbc:sqlite:" + AppParams.USER_DIR + "/mdpmngr.db");
 	    	c.setAutoCommit(false);
 	    	
 	    	AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 304, AppParams.DEBUG_MODE);
@@ -349,10 +349,10 @@ public class SQLiteDAO implements Observable {
 	}// END delete()
 	
 	/**
-	 * Met à jour les identifiants d'un site web 
-	 * @param login : le login
-	 * @param mdpB : le mot de passe
-	 * @param site : le site pour lequel on veut mettre à jour les identifiants de connexion
+	 * Méthode qui met à jour les identifiants d'un site web 
+	 * @param login {String} : le login
+	 * @param mdpB {char[]} : le mot de passe
+	 * @param site {String} : le site pour lequel on veut mettre à jour les identifiants de connexion
 	 * @deprecated
 	 */
 	public void update(String login, char[] mdpB, String site) {
@@ -376,7 +376,7 @@ public class SQLiteDAO implements Observable {
 		
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:mdpmngr.db");
+			c = DriverManager.getConnection("jdbc:sqlite:" + AppParams.USER_DIR + "/mdpmngr.db");
 			c.setAutoCommit(false);
 			
 			AppUtils.setConsoleMessage("Succès de la connexion à la BDD SQLite.", SQLiteDAO.class, MessageType.INFORMATION, 373, AppParams.DEBUG_MODE);
@@ -386,14 +386,17 @@ public class SQLiteDAO implements Observable {
 					(mdp.isEmpty() || mdp.equals("") || mdp.matches(" +") || mdp == null || mdp.equals("NA"))) {
 				// TODO: afficher une fenêtre informant à l'utilisateur qu'au moins un des 2 champs doit être rempli
 			}
+			// Sinon, si login invalide, on met à jour le mot de passe
 			else if (login.isEmpty() || login.equals("") || login.matches(" +") || login == null  || login.equals("NA")) {
 				query = "UPDATE identifiants SET mdp = ? WHERE site = ?;";// si login vide, enregistre mot de passe
 				queryNb = 1;
 			}
+			// Sinon si le mot de passe est invalide, on met à jour le login
 			else if (mdp.isEmpty() || mdp.equals("") || mdp.matches(" +") || mdp == null  || mdp.equals("NA")) {
 				query = "UPDATE identifiants SET login = ? WHERE site = ?;";// si mdp vide, enregistre login
 				queryNb = 2;
 			}
+			// Sinon, on met à jour le login et le mot de passe
 			else {
 				query = "UPDATE identifiants SET login = ?, mdp = ? WHERE site = ?;";// sinon, enregistre les 2 champs
 				queryNb = 3;

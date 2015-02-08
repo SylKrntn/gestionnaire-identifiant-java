@@ -22,7 +22,7 @@ import util.AppUtils;
 public class Launcher {
 
 	public static void main(String[] args) {
-		File file = new File("mdpmngr.cfg");// fichier de configuration de l'application
+		File file = new File(AppParams.USER_DIR + "/mdpmngr.cfg");// fichier de configuration de l'application
 		
 		Connection connexion = SQLiteDAO.getInstance().openDB();
 		

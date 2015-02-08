@@ -37,15 +37,32 @@ public class NoteVersionDialog extends JDialog {
 		textPane.setEditable(false);
 		textPane.setSize(WIDTH - 2, HEIGHT - 2);
 		
-		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.6
+		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.7
+		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 08/02/2015
+		
+		content += "<br /><strong>Nouveautés</strong> : ";
+		content += "<ul>";
+		content += "<li>Les fichiers de configuration et de base de données s'enregistrent dans le répertoire de l'application "
+					+ "(et non plus dans le dossier personnel de l'utilisateur) pour les utilisateurs de LINUX, "
+					+ "en utilisant le terminal et la commande \"java -jar\"</li>";
+		content += "</ul>";
+		
+		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
+		content += "<ul>";
+		content += "<li>Ajout des boîtes de dialogues \"Manuel utilisateur\" et \"Options\"</li>";
+		content += "<li>Nettoyer et factoriser le code</li>";
+		content += "<li>Améliorer les algorithmes</li>";
+		content += "</ul></p><hr>";// END maj
+		
+		content += "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.6
 		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 02/11/2014
 		
 		content += "<br /><strong>Nouveautés</strong> : ";
 		content += "<ul>";
 		content += "<li>Exportation des données au format CSV</li>";
 		content += "<li>Exportation des données au format XLS</li>";
-		content += "<li>Importer les données au format XLS</li>";
-		content += "<li>Importer les données au format PDF</li>";
+		content += "<li>Importation des données au format XLS</li>";
+		content += "<li>Importation des données au format PDF</li>";
 		content += "</ul>";
 		
 		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
