@@ -95,7 +95,7 @@ import model.dao.FileDAO;
 import model.dao.SQLiteDAO;
 
 public class Fenetre extends JFrame {
-	private final String TITLE = "MdP Manager";// titre de la fenêtre
+	private final String TITLE = AppParams.APP_NAME + " v" + AppParams.VERSION;// titre de la fenêtre
 	private final int WIDTH = 640;// largeur de la fenêtre
 	private final int HEIGHT = 480;// hauteur de la fenêtre
 	private JPanel btnPane;// panel contenant les boutons d'ajout et de suppression d'identifiant
@@ -950,12 +950,13 @@ public class Fenetre extends JFrame {
 			int[] selection = tableau.getSelectedRows();
 			
 			for (int i=selection.length -1; i>=0; i--) {
-				System.out.println("selectedRow : " + selection[i]);
-				String site = (String) identifiantTM.getValueAt(selection[i], 0);
+				int indice = tableau.convertRowIndexToModel(selection[i]);
+				System.out.println("selectedRow : " + indice);
+				String site = (String) identifiantTM.getValueAt(indice, 0);
 				System.out.println("site : " + site);
 				SQLiteDAO.getInstance().delete(site);
 				if (SQLiteDAO.getInstance().isDataDeleted()) {
-					identifiantTM.removeIdentifiant(selection[i]);
+					identifiantTM.removeIdentifiant(indice);
 				}
 			}
 		}		

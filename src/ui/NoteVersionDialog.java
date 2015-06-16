@@ -37,8 +37,24 @@ public class NoteVersionDialog extends JDialog {
 		textPane.setEditable(false);
 		textPane.setSize(WIDTH - 2, HEIGHT - 2);
 		
-		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.7
-		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 08/02/2015
+		String content = "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.8
+		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 16/06/2015
+		
+		content += "<br /><strong>Nouveautés</strong> : ";
+		content += "<ul>";
+		content += "<li>Correction d'un bug lors de la suppression d'un ou plusieurs identifiants qui ne supprimait pas le bon "
+					+ "identifiant lorsque l'utilisateur appliquait préalablement un tri sur n'importe quelle colonne du tableau</li>";
+		content += "</ul>";
+		
+		content += "<br /><strong>Fonctionnalités à venir</strong> : ";
+		content += "<ul>";
+		content += "<li>Ajout des boîtes de dialogues \"Manuel utilisateur\" et \"Options\"</li>";
+		content += "<li>Nettoyer et factoriser le code</li>";
+		content += "<li>Améliorer les algorithmes</li>";
+		content += "</ul></p><hr>";// END maj
+		
+		content += "<p><strong>Version</strong> : 1.7";// v1.7
+		content += "<br/><strong>Date de mise à jour</strong> : 08/02/2015";// 08/02/2015
 		
 		content += "<br /><strong>Nouveautés</strong> : ";
 		content += "<ul>";
@@ -54,8 +70,8 @@ public class NoteVersionDialog extends JDialog {
 		content += "<li>Améliorer les algorithmes</li>";
 		content += "</ul></p><hr>";// END maj
 		
-		content += "<p><strong>Version</strong> : " + AppParams.VERSION;// v1.6
-		content += "<br/><strong>Date de mise à jour</strong> : " + AppParams.RELEASE_DATE;// 02/11/2014
+		content += "<p><strong>Version</strong> : 1.6";// v1.6
+		content += "<br/><strong>Date de mise à jour</strong> : 02/11/2014";// 02/11/2014
 		
 		content += "<br /><strong>Nouveautés</strong> : ";
 		content += "<ul>";
